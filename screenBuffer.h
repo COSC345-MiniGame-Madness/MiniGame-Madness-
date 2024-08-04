@@ -1,182 +1,77 @@
 #ifndef SCREENBUFFER_H
 #define SCREENBUFFER_H
 
-#include <string>
-#include <utility>
-#include <vector>
-#include <stdexcept>
 #include <windows.h>
+#include <utility>
+#include <string>
 
 class screenBuffer
 {
+
 private:
     HANDLE screenHandle;
-    const WORD NO_COLOUR = -1;
+    WORD SAME_COLOUR = 0xFFFF; // No change in  text or background colour
 
-    /**
-     * Throw an error if the result is false
-     * @param result The result of the operation
-     */
-    void throwError(BOOL result, const std::string message) const;
-
-    /**
-     * Write to the screen buffer
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param text The text to write
-     * @return result The result of the operation
-     */
-    BOOL writeToScreenBuffer(int x, int y, const std::string text);
-
-    /**
-     * Return the text and background colours to the default
-     * @return void
-     */
-    void resetColours();
+    // throw Errors if result is false
+    void throwError(BOOL result, std::string message) const;
 
 public:
-    /**
-     * Constructor for the screenBuffer class
-     */
+    // Constructor
     screenBuffer();
 
-    /**
-     * Destructor for the screenBuffer class
-     */
+    // Destructor
     ~screenBuffer();
 
-    /**
-     * Get the screen buffer handle
-     * @return HANDLE The handle of the screen buffer
-     */
+    // Get the screen handle
     HANDLE getScreenHandle() const;
 
-    /**
-     * Check if the screen buffer is active
-     * @return bool True if the screen buffer is active
-     */
+    // Is active
     bool isActive() const;
 
-    /**
-     * Get screen buffer info
-     * @return CONSOLE_SCREEN_BUFFER_INFO The screen buffer info
-     */
-    CONSOLE_SCREEN_BUFFER_INFO getScreenBufferInfo() const;
-
-    /**
-     * Clears the screen buffer
-     */
+    // Clear the screen buffer
     void clearScreen();
 
-    /**
-     * Get the screen buffer width
-     * @return int The width of the screen buffer
-     */
+    // Get the screen buffer width
     int getScreenWidth() const;
 
-    /**
-     * Get the screen buffer height
-     * @return int The height of the screen buffer
-     */
+    // Get the screen buffer height
     int getScreenHeight() const;
 
-    /**
-     * Get the size of the screen buffer
-     * @return int The size of the screen
-     */
+    // Get the screen buffer size
     int getScreenSize() const;
 
-    /**
-     * Set the size of the screen buffer and window
-     * @param width The width of the screen
-     * @param height The height of the screen
-     */
-    void setScreenSize(int width, int height);
-
-    /**
-     * Get the screen text and background colors
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param length The length of the text
-     * @return std::pair<WORD, WORD> The text and background colors
-     */
+    // Get screen buffer text and bacgoround colours
     std::pair<WORD, WORD> getScreenColours(int x, int y, int length) const;
 
-    /**
-     * Set the screen text
-     * @param text The text to have its colour set
-     * @param textColour The color of the text
-     * @param backgroundColour The color of the background
-     * @return void
-     */
-    std::string setTextColours(std::string text, WORD textColour, WORD backgroundColour);
+    // Set screen buffer text and background colours
+    void setScreenColours(int x, int y, int length, WORD textColour, WORD backgroundColour);
 
-    /**
-     * Set cursor visibility
-     * @param isVisible True to show the cursor, false to hide it
-     */
-    void setCursorVisibility(bool isVisible);
+    // Set curser visibility
+    void setCursorVisibility(bool visible);
 
-    /**
-     * Move the cursor to the specified location
-     * @param x The x coordinate
-     * @param y The y coordinate
-     */
-    void setCursorPosition(int x, int y);
-
-    /**
-     * Get the current location of the cursor
-     * @return std::pair<int, int> The x and y coordinates of the cursor
-     */
+    // Get cursor position
     std::pair<int, int> getCursorPosition() const;
 
-    /**
-     * Get part of text in the screen buffer
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param length The length of the text
-     * @return std::string The text at the specified location
-     */
-    std::string getScreenText(int x, int y, int length) const;
+    // Change cursor position
+    void setCursorPosition(int x, int y);
 
-    /**
-     * Get all of the text in the screen buffer
-     * @return std::string The text in the screen buffer
-     */
+    // Get text from screen buffer
+    std::string getScreenText(int x, int y, int length);
+
+    // Get all text from screen buffer
     std::string getAllScreenText() const;
 
-    /**
-     * Write text to the screen at a specific location
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param text The text to write
-     */
-    void writeToScreen(int x, int y, const std::string text);
+    // Write text to the screen buffer at a specific position
+    void writeToScreen(int x, int y, std::string text);
 
-    /**
-     * Write text to the screen at a specific location with a specific color
-     * @param x The x coordinate
-     * @param y The y coordinate
-     * @param text The text to write
-     * @param textColour The color of the text
-     * @param backgroundColour The color of the background
-     */
-    void writeToScreen(int x, int y, const std::string text, WORD textColour, WORD backgroundColour);
+    // Write text to the screen buffer at a specific position with a specific colour
+    void writeToScreen(int x, int y, std::string text, WORD textColour, WORD backgroundColour);
 
-    /**
-     * Fill the screen buffer with a specific character
-     * @param character The character to write
-     */
-    void fillScreen(std::string text);
+    // Fill the screen buffer with a specific character
+    void fillScreen(char character);
 
-    /**
-     * Fill the screen buffer with a specific character and color
-     * @param character The character to write
-     * @param textColour The color of the text
-     * @param backgroundColour The color of the background
-     */
-    void fillScreen(std::string text, WORD textColour, WORD backgroundColour);
+    // Copy old screen buffer to new screen buffer
+    static screenBuffer copyScreenBufferCopy(const screenBuffer &screenBufferOld);
 };
 
 #endif // SCREENBUFFER_H
-
