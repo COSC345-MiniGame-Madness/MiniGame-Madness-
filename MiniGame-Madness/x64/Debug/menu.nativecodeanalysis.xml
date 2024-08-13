@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Users\jaybe\OneDrive\Documents\code\MiniGame-Madness\src\</FILEPATH>
+      <FILENAME>menu.cpp</FILENAME>
+      <LINE>34</LINE>
+      <COLUMN>96</COLUMN>
+    </SFA>
+    <DEFECTCODE>6201</DEFECTCODE>
+    <DESCRIPTION>Index '6' is out of valid index range '0' to '5' for possibly stack allocated buffer 'text'.</DESCRIPTION>
+    <FUNCTION>main</FUNCTION>
+    <DECORATED>main</DECORATED>
+    <FUNCLINE>5</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
