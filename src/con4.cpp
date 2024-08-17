@@ -1,5 +1,4 @@
 #include <iostream>
-#include "con4.h"
 
 int grid[7][6];
 int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
@@ -20,7 +19,7 @@ void populategrid()
 {
     for(int i = 0; i < 7; i++)
     {
-        for(int j = 0; j < 6; j++)
+        for(int j = 0; i < 6; i++)
         {
             grid[i][j] = 0;
         }
@@ -115,13 +114,13 @@ void swapturn(int playert)
     }
 }
 
-void connect4()
+int main()
 {
     std::cout << "Hello World" << std::endl;
 
     populategrid();
 
-    currentplayer = randomstarter();
+    currentplayer = randomstarter;
 
     do
     {
@@ -131,7 +130,7 @@ void connect4()
 
         checkdraw(); 
 
-        swapturn(currentplayer);
+        swapturn();
 
     } while (winquestionmark == false);
 
