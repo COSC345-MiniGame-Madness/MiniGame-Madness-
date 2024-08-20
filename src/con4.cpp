@@ -30,7 +30,7 @@ void dropcoin(int column, int playercoin)
 {
     for (int i = 0; i < 6; i++)
     {
-        if (grid[column][i-1] != 0 || i == 6)
+        if (grid[column][i+1] != 0 || i == 6)
         {
             grid[column][i] = playercoin;
             
@@ -120,7 +120,7 @@ int main()
 
     populategrid();
 
-    currentplayer = randomstarter;
+    currentplayer = randomstarter();
 
     do
     {
@@ -130,7 +130,7 @@ int main()
 
         checkdraw(); 
 
-        swapturn();
+        swapturn(currentplayer);
 
     } while (winquestionmark == false);
 
