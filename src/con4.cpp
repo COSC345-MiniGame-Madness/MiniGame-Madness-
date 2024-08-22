@@ -120,7 +120,7 @@ int main()
 
     populategrid();
 
-    currentplayer = randomstarter;
+    currentplayer = randomstarter();
 
     do
     {
@@ -130,7 +130,7 @@ int main()
 
         checkdraw(); 
 
-        swapturn();
+        swapturn(currentplayer);
 
     } while (winquestionmark == false);
 

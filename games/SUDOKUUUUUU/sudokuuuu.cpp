@@ -1,6 +1,9 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
+
+using namespace std;
 
 int grid[9][9];
 int answer[9][9];
@@ -10,7 +13,34 @@ bool winquestionmark = false;
 
 void enternum()
 {
-	
+	do // GO OVER THIS AGAIN & FIX IT
+	{
+		string input;
+		int inp, pos, x, y;
+
+		std::cout << "enter number and coordinates in the format of 'number x*y'" << std::endl;
+
+		getline(cin, input);
+
+		pos = input.find(' ');
+
+		string num = input.substr(0, pos);
+
+		inp = stoi(num);
+
+		input.erase(0, pos + 1);
+
+		string xpos = input.substr(0, input.find('*');
+
+		x = stoi(xpos);
+
+		pos = input.find('*');
+
+		input.erase(0, pos + 1);
+
+		y = stoi(ypos);
+
+	} while (true);
 }
 
 void populate()
@@ -43,7 +73,7 @@ void populate()
 				{
 					if (grid[h][j] == numtoplacein)
 					{
-						verticalcheck.pop_back
+						verticalcheck.pop_back;
 					}
 				}
 
@@ -98,7 +128,7 @@ void populate()
 		
 			} while (std::find(horizontalcheck.begin(), horizontalcheck.end(), numtoplacein) && std::find(verticalcheck.begin(), verticalcheck.end(), numtoplacein));
 			
-			horizontalcheck.remove(numtoplacein)
+			horizontalcheck.remove(numtoplacein);
 		}
 	}
 
