@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 int grid[7][6];
 int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
@@ -10,22 +13,6 @@ bool endgame() //
     return false;
 }
 
-void playerturn(int player)
-{
-    
-}
-
-void populategrid()
-{
-    for(int i = 0; i < 7; i++)
-    {
-        for(int j = 0; i < 6; i++)
-        {
-            grid[i][j] = 0;
-        }
-    }
-}
-
 void dropcoin(int column, int playercoin)
 {
     for (int i = 0; i < 6; i++)
@@ -35,6 +22,28 @@ void dropcoin(int column, int playercoin)
             grid[column][i] = playercoin;
             
             break;
+        }
+    }
+}
+
+void playerturn(int player)
+{
+    cout << "player " << player << "'s turn. Select a column to drop a coin.";
+
+    string coldrop;
+
+    getline(cin, coldrop);
+
+    dropcoin(stoi(coldrop), player);
+}
+
+void populategrid()
+{
+    for(int i = 0; i < 7; i++)
+    {
+        for(int j = 0; i < 6; i++)
+        {
+            grid[i][j] = 0;
         }
     }
 }
