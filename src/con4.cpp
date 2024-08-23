@@ -8,9 +8,9 @@ int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
 int currentplayer;
 bool winquestionmark = false;
 
-bool endgame() // 
+void endgame() // 
 {
-    return false;
+    winquestionmark = true;
 }
 
 void dropcoin(int column, int playercoin)
@@ -76,14 +76,14 @@ void checkwin()
             {
                 if (grid[i][j] == grid[i + 1][j] && grid[i + 1][j] == grid[i + 2][j] && grid[i + 2][j] == grid[i + 3][j])
                 {
-
+                    endgame();
                 }
 
                 if (j < 3) // vertical
                 {
                     if (grid[i][j] == grid[i + 1][j + 1] && grid[i + 1][j + 1] == grid[i + 2][j + 2] && grid[i + 2][j + 2] == grid[i + 3][j + 3])
                     {
-
+                        endgame();
                     }
                 }
             }
@@ -92,7 +92,7 @@ void checkwin()
             {
                 if (grid[i][j] == grid[i - 1][j + 1] && grid[i - 1][j + 1] == grid[i - 2][j + 2] && grid[i - 2][j + 2] == grid[i - 3][j + 3])
                 {
-
+                    endgame();
                 }
             }
 
@@ -100,7 +100,7 @@ void checkwin()
             {
                 if (grid[i][j] == grid[i][j + 1] && grid[i][j + 1] == grid[i][j + 2] && grid[i][j + 2] == grid[i][j + 3])
                 {
-
+                    endgame();
                 }
             }
         }
@@ -133,17 +133,15 @@ int main()
 
     do
     {
+        swapturn(currentplayer);
+
         playerturn(currentplayer);
 
         checkwin();
 
         checkdraw(); 
 
-        swapturn(currentplayer);
-
     } while (winquestionmark == false);
 
     // sysout player # wins
 }
-
-//https://codereview.stackexchange.com/questions/184809/connect-4-in-c
