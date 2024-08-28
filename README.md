@@ -1,4 +1,5 @@
 # MiniGame-Madness
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/97b946dbd823490a822e2c0f9824f900)](https://app.codacy.com/gh/COSC345-MiniGame-Madness/MiniGame-Madness?utm_source=github.com&utm_medium=referral&utm_content=COSC345-MiniGame-Madness/MiniGame-Madness&utm_campaign=Badge_Grade)
 [![MSBuild](https://github.com/COSC345-MiniGame-Madness/MiniGame-Madness/actions/workflows/msbuild.yml/badge.svg)](https://github.com/COSC345-MiniGame-Madness/MiniGame-Madness/actions/workflows/msbuild.yml) 
 [![codecov](https://codecov.io/github/COSC345-MiniGame-Madness/MiniGame-Madness/graph/badge.svg?token=WJUV5TAS1U)](https://codecov.io/github/COSC345-MiniGame-Madness/MiniGame-Madness)
 ## Project Overview
