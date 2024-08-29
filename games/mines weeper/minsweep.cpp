@@ -2,7 +2,7 @@
 #include <string>
 
 //char grid[][];
-int wide;
+int wide = 8;
 bool finquestionmark = false, winquestionmark = false, kaboomquestionmark = false;
 
 bool endgame() // g
@@ -14,24 +14,27 @@ void populategrid(char diff)
 {
     int max, min, mines;
 
-    if (diff == 'e')
+    do
     {
-        wide = 8;
-        max = 10;
-        min = 8;
-    } else if (diff == 'm')
-    {
-        wide = 14;
-        max = 10;
-        min = 8;
-    } else if (diff == 'h')
-    {
-        wide = 25;
-        max = 10;
-        min = 8;
-    }
+        if (diff == 'e')
+        {
+            wide = 8;
+            max = 10;
+            min = 8;
+        } else if (diff == 'm')
+        {
+            wide = 14;
+            max = 10;
+            min = 8;
+        } else if (diff == 'h')
+        {
+            wide = 25;
+            max = 10;
+            min = 8;
+        }
+    } while (diff);
     
-    char grid[wide][wide];
+    int grid[wide][wide];
 
     mines = min + (rand() % max);
 
@@ -66,7 +69,7 @@ void kaboom()
     kaboomquestionmark = true;
 }
 
-int main()
+int minsweep()
 {
     char difficulty = 'x';
 
