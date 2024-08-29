@@ -40,6 +40,15 @@ namespace sudokuTest
 
 			Assert::AreEqual(false, game.uniquequestionmark(game.grid, 2, 1, 6));
 		}
+
+		TEST_METHOD(solvecheck) //checks if all spaces are filled
+		{
+			sudokuuuu game;
+
+			game.generate(grid);
+
+			Assert::AreEqual(true, game.solver(grid));
+		}
 		/*
 		TEST_METHOD() //theres literally no other thing to test
 		{
