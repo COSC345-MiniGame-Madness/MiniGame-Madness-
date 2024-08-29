@@ -1,146 +1,214 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <algorithm>
-#include <vector>
+#include <random>
 #include <string>
 
 using namespace std;
 
-int grid[9][9];
-int answer[9][9];
-int player = 1;
-int currentplayer;
-bool winquestionmark = false;
+int answer[9][9] = { 0 };
 
-void enternum()
+bool uniquequestionmark(int grid[9][9], int row, int col, int num)
 {
-	do // GO OVER THIS AGAIN & FIX IT
-	{
-		string input;
-		int inp, pos, x, y;
+    for (int x = 0; x < 9; x++)
+    {
+        if (grid[row][x] == num || grid[x][col] == num)
+        {
+            return false;
+        }
+    }
 
-		std::cout << "enter number and coordinates in the format of 'number x*y'" << std::endl;
+    int startRow = row - row % 3, startCol = col - col % 3;
 
-		getline(cin, input);
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (grid[i + startRow][j + startCol] == num)
+            {
+                return false;
+            }
+        }
+    }
 
-		pos = input.find(' ');
-
-		string num = input.substr(0, pos);
-
-		inp = stoi(num);
-
-		input.erase(0, pos + 1);
-
-		string xpos = input.substr(0, input.find('*');
-
-		x = stoi(xpos);
-
-		pos = input.find('*');
-
-		input.erase(0, pos + 1);
-
-		y = stoi(ypos);
-
-	} while (true);
+    return true;
 }
 
-void populate()
+void enternum(int grid[9][9])
 {
-	int numtoplacein;
-	//int horizontalcheck[9], verticalcheck[9];
+    int answer, x, y;
+    bool numbercheck = false;
 
-	std::vector < int > horizontalcheck;
-	std::vector < int > verticalcheck;
+    do // Repeats until valid input is given
+    {
+        string input;
+        cout << "\nEnter number and coordinates in the format of 'number row*column': ";
+        getline(cin, input);
 
-	for (int t = 1; t < 10; t++)
-	{
-		horizontalcheck.push_back(t);
-		verticalcheck.push_back(t);
-	}
+        try {
+            size_t pos = input.find(' ');
+            if (pos == string::npos) throw invalid_argument("Missing space");
 
-	for (int i = 0; i < 9; i++)
-	{
-		//horizontalcheck = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            string num = input.substr(0, pos);
+            input.erase(0, pos + 1);
 
-		for (int j = 0; j < 9; j++)
-		{
-			do
-			{
-				numtoplacein = 1 + (rand() % 9);
+            pos = input.find('*');
+            if (pos == string::npos) throw invalid_argument("Missing '*'");
 
-				//verticalcheck = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // faster to randomly pick number from reduced list
+            string xpos = input.substr(0, pos);
+            string ypos = input.substr(pos + 1);
 
-				for (int h = i; h > 0; h--)
-				{
-					if (grid[h][j] == numtoplacein)
-					{
-						verticalcheck.pop_back;
-					}
-				}
+            answer = stoi(num);
+            x = stoi(xpos);
+            y = stoi(ypos);
 
-				if (j < 3 && i < 3) // top left 3x3 square
-				{
-					for (int o = 0; o < 3; )
-				}
+            // Ensure coordinates are within bounds
+            if (x < 1 || x > 9 || y < 1 || y > 9) {
+                cout << "Coordinates out of bounds. Enter positions between 1 and 9.\n";
+                continue;
+            }
 
-				if (j >= 3 && j < 6 && i < 3)
-				{
+            //adjust for array's zero positions
+            x -= 1;
+            y -= 1;
 
-				}
+            numbercheck = true;
 
-				if (j >= 6 && i < 3)
-				{
+        }
+        catch (invalid_argument& e) {
+            cout << "Invalid input format. Please try again.\n";
+        }
+        catch (out_of_range& e) {
+            cout << "Input is out of range. Please enter smaller numbers.\n";
+        }
+    } while (!numbercheck);
 
-				}
-
-				if (j < 3 && i >= 3 && i < 6)
-				{
-
-				}
-
-				if (j >= 3 && j < 6 && i >= 3 && i < 6)
-				{
-
-				}
-
-				if (j >= 6 && i >= 3 && i < 6)
-				{
-
-				}
-
-				if (j < 3 && i >= 6)
-				{
-
-				}
-
-				if (j >= 3 && j < 6 && i >= 6)
-				{
-
-				}
-
-				if (j >= 6 && i >= 6)
-				{
-
-				}
-
-				grid[i][j] = numtoplacein; // find a way to ensure the number is unique for row & column & square
-
-				horizontalcheck.remove(numtoplacein);
-		
-			} while (std::find(horizontalcheck.begin(), horizontalcheck.end(), numtoplacein) && std::find(verticalcheck.begin(), verticalcheck.end(), numtoplacein));
-			
-			horizontalcheck.remove(numtoplacein);
-		}
-	}
-
-	answer = grid;
+    grid[x][y] = answer;
 }
 
-void wincheck()
+bool solver(int grid[9][9])
+{
+    int row, col;
+    bool empty = false;
+
+    for (row = 0; row < 9; row++)
+    {
+        for (col = 0; col < 9; col++)
+        {
+            if (grid[row][col] == 0)
+            {
+                empty = true;
+
+                break;
+            }
+        }
+        if (empty) break;
+    }
+
+    if (!empty)
+    {
+        return true; //all cells filled
+    }
+
+    int nums[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    random_device rd;
+    mt19937 g(rd());
+
+    std::shuffle(nums, nums + 9, g); //randomize order of numbers
+
+    for (int i = 0; i < 9; i++)
+    {
+        int num = nums[i];
+
+        if (uniquequestionmark(grid, row, col, num))
+        {
+            grid[row][col] = num;
+
+            if (solver(grid))
+            {
+                return true;
+            }
+
+            grid[row][col] = 0; //backtrack
+        }
+    }
+
+    return false; //trigger backtracking
+}
+
+void generate(int grid[9][9])
+{
+    solver(grid);
+}
+
+void remover(int grid[9][9], int count)
+{
+    while (count > 0)
+    {
+        int row = rand() % 9;
+        int col = rand() % 9;
+
+        if (grid[row][col] != 0)
+        {
+            grid[row][col] = 0;
+            count--;
+        }
+    }
+}
+
+void display(int grid[9][9])
+{
+    for (int row = 0; row < 9; row++)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            cout << grid[row][col] << " ";
+        }
+
+        cout << endl;
+    }
+}
+
+void giveanswer(int original[9][9])
+{
+    for (int row = 0; row < 9; row++)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            answer[row][col] = original[row][col];
+        }
+    }
+}
+
+int givepos(int row, int col)
 {
 
 }
 
-void main()
+int main()
 {
+    srand(time(0)); //random number generator
 
+    int grid[9][9] = { 0 }; //grid
+
+    generate(grid); //randomize grid
+
+    giveanswer(grid); // and save it to a second grid
+
+    remover(grid, 40); //remove numbers
+
+    do
+    {
+        display(grid);
+        //cout << "\n\n";
+        //display(answer);
+
+        enternum(grid);
+    } while (memcmp(answer, grid, sizeof(answer)) != 0);
+
+    cout << "You are winner. Now go outside" << endl;
+
+    return 0;
 }
