@@ -3,10 +3,15 @@
 
 using namespace std;
 
-int grid[7][6];
+int grid[7][6] = {0};
 int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
 int currentplayer;
 bool winquestionmark = false;
+/*
+con4game::con4game()
+{
+
+}*/
 
 void endgame() // 
 {
@@ -112,20 +117,25 @@ int randomstarter()
     return 1 + (rand() % 2);
 }
 
-void swapturn(int playert)
+int swapturn(int playert)
 {
     if (playert == 1)
     {
-        currentplayer = 2;
+        return 2;
     }
     else {
-        currentplayer = 1;
+        return 1;
     }
 }
 
-int main()
+void setnum(int num, int row, int col)
 {
-    std::cout << "Hello World" << std::endl;
+    grid[row][col] = num;
+}
+
+int con4()
+{
+    cout << "Hello World";
 
     populategrid();
 
@@ -133,7 +143,7 @@ int main()
 
     do
     {
-        swapturn(currentplayer);
+        currentplayer = swapturn(currentplayer);
 
         playerturn(currentplayer);
 
@@ -143,5 +153,6 @@ int main()
 
     } while (winquestionmark == false);
 
+    return 0;
     // sysout player # wins
 }

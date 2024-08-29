@@ -5,7 +5,7 @@ int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
 int currentplayer;
 bool winquestionmark = false;
 
-bool endgame() // g
+bool endgame() //game ends
 {
     return false;
 }
