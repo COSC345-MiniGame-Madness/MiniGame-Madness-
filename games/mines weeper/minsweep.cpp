@@ -48,7 +48,49 @@ void populategrid(char diff)
 
     while(mines > 0)
     {
-        grid[rand() % wide][rand() % wide] = 9;
+        int xrand = rand() % wide, yrand = rand() % wide;
+        grid[xrand][yrand] = 9;
+
+        if (xrand != 0) // == 0? or != 0? for EVERY grid pos
+        {
+            grid[xrand + 1][yrand] += 1;
+
+            if (yrand != 0)
+            {
+                grid[xrand + 1][yrand + 1] += 1;
+            }
+
+            if (yrand != wide - 1)
+            {
+                grid[xrand + 1][yrand - 1] += 1;
+            }
+        }
+
+        if (xrand != wide - 1)
+        {
+            grid[xrand - 1][yrand] += 1;
+
+            if (yrand != 0)
+            {
+                grid[xrand][yrand + 1] += 1;
+            }
+
+            if (yrand != wide - 1)
+            {
+                grid[xrand - 1][yrand - 1] += 1;
+            }
+        }
+
+        if (yrand != 0)
+        {
+            grid[xrand][yrand + 1] += 1;
+        }
+
+        if (yrand != wide - 1)
+        {
+            grid[xrand][yrand - 1] += 1;
+        }
+
         mines--;
     }
 }
@@ -67,6 +109,11 @@ void checkwin()
 void kaboom()
 {
     kaboomquestionmark = true;
+}
+
+void makemove(int xcoords, int ycoords)
+{
+    if 
 }
 
 int minsweep()
@@ -99,5 +146,9 @@ int minsweep()
             win = true;
             break;
         }
+
+        makemove()
     }
+
+    endgame();
 }
