@@ -1,6 +1,10 @@
 #ifndef CON4_H
 #define CON4_H
 
+#include "screenBuffer.h"
+
+using namespace std;
+
 /*!
  * @file con4.h
  * @brief Contains the declaration of the Connect4 class and its member functions.
@@ -16,6 +20,8 @@ private:
 	int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
     int currentplayer;
     bool winquestionmark = false;
+
+    ScreenBuffer screenBuffer;
 
     /*!
      * @brief Checks if the game has ended.
@@ -61,7 +67,7 @@ public:
      * @brief Swaps the turn between players.
      * @param playert The current player.
      */
-    void swapturn(int playert);
+    int swapturn(int playert);
 
     /*!
      * @brief Handles the player's turn.
@@ -69,10 +75,12 @@ public:
      */
     void playerturn(int player);
 
+    void display();
+
     /*!
      * @brief Main function to run the Connect 4 game.
      */
-    void connect4();
+    int connect4();
 };
 
 #endif // CON4_H

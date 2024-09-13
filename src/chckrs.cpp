@@ -3,8 +3,8 @@
 using namespace std;
 
 int checkersGrid[8][8];
-int player1 = 1, player2 = 2, currentplayer = 1;
-bool winquestionmark = false;
+int play1 = 1, play2 = 2, currplayer = 1;
+bool winquestionmrk = false;
 
 void populateCheckersGrid()
 {
