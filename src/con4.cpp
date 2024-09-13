@@ -1,17 +1,16 @@
 #include <iostream>
-#include <string>
+#include "con4.h"
 
-using namespace std;
 
-int grid[7][6] = {0};
-int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
-int currentplayer;
-bool winquestionmark = false;
-/*
-con4game::con4game()
+Con4::Con4()
+{
+	populategrid();
+}
+
+bool Con4::endgame() // 
 {
 
-}*/
+}
 
 void endgame() // 
 {
@@ -31,7 +30,7 @@ void dropcoin(int column, int playercoin)
     }
 }
 
-void playerturn(int player)
+void Con4::playerturn(int player)
 {
     cout << "player " << player << "'s turn. Select a column to drop a coin.";
 
@@ -42,18 +41,31 @@ void playerturn(int player)
     dropcoin(stoi(coldrop), player);
 }
 
-void populategrid()
+void Con4::populategrid()
 {
     for(int i = 0; i < 7; i++)
     {
-        for(int j = 0; i < 6; i++)
+        for(int j = 0; j < 6; j++)
         {
             grid[i][j] = 0;
         }
     }
 }
 
-void checkdraw()
+void Con4::dropcoin(int column, int playercoin)
+{
+    for (int i = 0; i < 7; i++)
+    {
+        if (grid[column][i+1] != 0 || i == 6)
+        {
+            grid[column][i] = playercoin;
+            
+            break;
+        }
+    }
+}
+
+void Con4::checkdraw()
 {
     bool full = true;
 
@@ -71,7 +83,7 @@ void checkdraw()
     }
 }
 
-void checkwin()
+void Con4::checkwin()
 {
     for(int i = 0; i < 7; i++)
     {
@@ -112,12 +124,12 @@ void checkwin()
     }
 }
 
-int randomstarter()
+int Con4::randomstarter()
 {
     return 1 + (rand() % 2);
 }
 
-int swapturn(int playert)
+void Con4::swapturn(int playert)
 {
     if (playert == 1)
     {
@@ -128,7 +140,7 @@ int swapturn(int playert)
     }
 }
 
-void setnum(int num, int row, int col)
+void Con4::connect4()
 {
     grid[row][col] = num;
 }
@@ -150,6 +162,8 @@ int con4()
         checkwin();
 
         checkdraw(); 
+
+        swapturn(currentplayer);
 
     } while (winquestionmark == false);
 
