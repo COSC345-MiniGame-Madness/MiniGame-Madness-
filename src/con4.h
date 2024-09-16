@@ -27,7 +27,7 @@ private:
      * @brief Checks if the game has ended.
      * @return bool True if the game has ended, false otherwise.
      */
-    bool endgame();
+    void endgame(bool surrender);
 
 public:
     /*!

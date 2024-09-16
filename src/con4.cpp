@@ -12,9 +12,16 @@ Con4::Con4()
 	populategrid();
 }
 
-bool Con4::endgame() // 
+void Con4::endgame(bool surrender) // end game
 {
-    return false;
+    if (surrender == false)
+    {
+        screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" wins.");
+
+        screenBuffer.getBlockingInput();
+    }
+
+    winquestionmark = true;
 }
 
 void Con4::playerturn(int player)
@@ -23,13 +30,45 @@ void Con4::playerturn(int player)
 
     string diff = screenBuffer.getBlockingInput();
 
-    if (stoi(diff) == 9)
-    {
+    bool repeat = true;
 
-    }
-    else
+    while(repeat)
     {
-        dropcoin(stoi(diff), player);
+        if (stoi(diff) == 9)
+        {
+            repeat = false;
+
+            endgame(true);
+        }
+        else if (stoi(diff) >= 1 && stoi(diff) <= 7)
+        {
+            repeat = false;
+
+            dropcoin(stoi(diff), player);
+        }
+        else
+        {
+            screenBuffer.writeToScreen(0, 16, L"Invalid input. Choose between 1 and 7.");
+
+            //screenBuffer.getBlockingInput();
+        }
+    }
+}
+
+void Con4::dropcoin(int column, int playercoin)
+{
+    for (int i = 5; i >= 0; i--)
+    {
+        if (grid[i][column - 1] == 0)
+        {
+            grid[i][column - 1] = playercoin;
+            
+            screenBuffer.writeToScreen(0, 16, L"Dropping coin in column: " + to_wstring(column - 1));
+
+            //screenBuffer.getBlockingInput();
+
+            break;
+        }
     }
 }
 
@@ -40,19 +79,6 @@ void Con4::populategrid()
         for(int j = 0; j < 7; j++)
         {
             grid[i][j] = 0;
-        }
-    }
-}
-
-void Con4::dropcoin(int column, int playercoin)
-{
-    for (int i = 0; i < 6; i++)
-    {
-        if (grid[column][i+1] != 0 || i == 6)
-        {
-            grid[column][i] = playercoin;
-            
-            break;
         }
     }
 }
@@ -71,7 +97,7 @@ void Con4::checkdraw()
 
     if(full == true)
     {
-        endgame();
+        endgame(false);
     }
 }
 
@@ -79,38 +105,26 @@ void Con4::checkwin()
 {
     for(int i = 0; i < 6; i++)
     {
-        for(int j = 0; i < 7; i++)
+        for(int j = 0; j < 7; j++)
         {
-            if(i < 5) // horizontal, diagonal right
+            if (j < 4 && grid[i][j] == grid[i][j + 1] && grid[i][j] == grid[i][j + 2] && grid[i][j] == grid[i][j + 3] && grid[i][j] != 0) // horizontal
             {
-                if (grid[i][j] == grid[i + 1][j] && grid[i + 1][j] == grid[i + 2][j] && grid[i + 2][j] == grid[i + 3][j])
-                {
-                    endgame();
-                }
-
-                if (j < 3) // vertical
-                {
-                    if (grid[i][j] == grid[i + 1][j + 1] && grid[i + 1][j + 1] == grid[i + 2][j + 2] && grid[i + 2][j + 2] == grid[i + 3][j + 3])
-                    {
-                        endgame();
-                    }
-                }
+                endgame(false);
+            }
+            
+            if (i < 3 && grid[i][j] == grid[i + 1][j] && grid[i][j] == grid[i + 2][j] && grid[i][j] == grid[i + 3][j] && grid[i][j] != 0) // vertical
+            {
+                endgame(false);
             }
 
-            if (i > 3 && j < 3) // diagonal left
+            if (i < 3 && j < 4 && grid[i][j] == grid[i + 1][j + 1] && grid[i][j] == grid[i + 2][j + 2] && grid[i][j] == grid[i + 3][j + 3] && grid[i][j] != 0) // diagonal down right
             {
-                if (grid[i][j] == grid[i - 1][j + 1] && grid[i - 1][j + 1] == grid[i - 2][j + 2] && grid[i - 2][j + 2] == grid[i - 3][j + 3])
-                {
-                    endgame();
-                }
+                endgame(false);
             }
 
-            if (j < 3) // vertical
+            if (i > 3 && j < 4 && grid[i][j] == grid[i - 1][j + 1] && grid[i][j] == grid[i - 2][j + 2] && grid[i][j] == grid[i - 3][j + 3] && grid[i][j] != 0) // diagonal down left
             {
-                if (grid[i][j] == grid[i][j + 1] && grid[i][j + 1] == grid[i][j + 2] && grid[i][j + 2] == grid[i][j + 3])
-                {
-                    endgame();
-                }
+                endgame(false);
             }
         }
     }
@@ -127,7 +141,8 @@ int Con4::swapturn(int playert)
     {
         return 2;
     }
-    else {
+    else 
+    {
         return 1;
     }
 }
@@ -152,14 +167,15 @@ void Con4::display()
 
         screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
     }
+
+    screenBuffer.writeToScreen(3, offset++, L"-------------" + to_wstring(grid[4][6])); // gives number when dropping in column 1. FIX
 }
 
 int Con4::connect4()
 {
+    winquestionmark = false;
+
     screenBuffer.setActive();
-    /*screenBuffer.writeToScreen(0, 0, L"asdfghjk");
-    screenBuffer.getBlockingInput();
-    cout << "Hello World";*/
 
     populategrid();
 
@@ -177,9 +193,7 @@ int Con4::connect4()
         
         checkwin();
 
-        checkdraw(); 
-
-        swapturn(currentplayer);
+        checkdraw();
 
     } while (winquestionmark == false);
 
