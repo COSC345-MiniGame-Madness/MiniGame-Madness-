@@ -16,7 +16,7 @@ using namespace std;
  */
 class Con4 {
 private:
-    int grid[7][6];
+    int grid[6][7];
 	int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
     int currentplayer;
     bool winquestionmark = false;
@@ -24,10 +24,10 @@ private:
     ScreenBuffer screenBuffer;
 
     /*!
-     * @brief Checks if the game has ended.
-     * @return bool True if the game has ended, false otherwise.
+     * @brief Ends game when called with specific values.
+     * @param s for surrender, w for win, d for draw.
      */
-    void endgame(bool surrender);
+    void endgame(wstring letter);
 
 public:
     /*!
@@ -75,6 +75,9 @@ public:
      */
     void playerturn(int player);
 
+    /*!
+     * @brief Handles the display of the grid.
+     */
     void display();
 
     /*!

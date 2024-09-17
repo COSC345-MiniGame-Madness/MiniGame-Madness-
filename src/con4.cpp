@@ -12,11 +12,23 @@ Con4::Con4()
 	populategrid();
 }
 
-void Con4::endgame(bool surrender) // end game
+void Con4::endgame(wstring letter) // end game
 {
-    if (surrender == false)
+    if (letter == L"w")
     {
         screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" wins.");
+
+        screenBuffer.getBlockingInput();
+    }
+    else if (letter == L"s")
+    {
+        screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" surrenders.");
+
+        screenBuffer.getBlockingInput();
+    }
+    else if (letter == L"d")
+    {
+        screenBuffer.writeToScreen(0, 16, L"Draw.");
 
         screenBuffer.getBlockingInput();
     }
@@ -26,9 +38,19 @@ void Con4::endgame(bool surrender) // end game
 
 void Con4::playerturn(int player)
 {
-    screenBuffer.writeToScreen(0, 14, L"player " + to_wstring(player) + L"'s turn. Select a column to drop a coin.  ");
+    string diff = "0";
 
-    string diff = screenBuffer.getBlockingInput();
+    do
+    {
+        screenBuffer.writeToScreen(0, 14, L"player " + to_wstring(player) + L"'s turn. Select a column to drop a coin.  ");
+
+        diff = screenBuffer.getBlockingInput();
+
+        if (grid[0][stoi(diff) - 1] != 0)
+        {
+            screenBuffer.writeToScreen(0, 18, L"Column is full. choose another.");
+        }
+    } while (grid[0][stoi(diff) - 1] != 0);
 
     bool repeat = true;
 
@@ -38,7 +60,7 @@ void Con4::playerturn(int player)
         {
             repeat = false;
 
-            endgame(true);
+            endgame(L"s");
         }
         else if (stoi(diff) >= 1 && stoi(diff) <= 7)
         {
@@ -50,7 +72,7 @@ void Con4::playerturn(int player)
         {
             screenBuffer.writeToScreen(0, 16, L"Invalid input. Choose between 1 and 7.");
 
-            //screenBuffer.getBlockingInput();
+            screenBuffer.getBlockingInput();
         }
     }
 }
@@ -62,10 +84,6 @@ void Con4::dropcoin(int column, int playercoin)
         if (grid[i][column - 1] == 0)
         {
             grid[i][column - 1] = playercoin;
-            
-            screenBuffer.writeToScreen(0, 16, L"Dropping coin in column: " + to_wstring(column - 1));
-
-            //screenBuffer.getBlockingInput();
 
             break;
         }
@@ -85,19 +103,9 @@ void Con4::populategrid()
 
 void Con4::checkdraw()
 {
-    bool full = true;
-
-    for(int i = 0; i < 7; i++)
+    if(grid[0][0] != 0 && grid[0][1] != 0 &&grid[0][2] != 0 && grid[0][3] != 0 && grid[0][4] != 0 && grid[0][5] != 0 && grid[0][6] != 0)
     {
-        if(grid[i][0] == 0)
-        {
-            full = false;
-        }
-    }
-
-    if(full == true)
-    {
-        endgame(false);
+        endgame(L"d");
     }
 }
 
@@ -109,22 +117,22 @@ void Con4::checkwin()
         {
             if (j < 4 && grid[i][j] == grid[i][j + 1] && grid[i][j] == grid[i][j + 2] && grid[i][j] == grid[i][j + 3] && grid[i][j] != 0) // horizontal
             {
-                endgame(false);
+                endgame(L"w");
             }
             
             if (i < 3 && grid[i][j] == grid[i + 1][j] && grid[i][j] == grid[i + 2][j] && grid[i][j] == grid[i + 3][j] && grid[i][j] != 0) // vertical
             {
-                endgame(false);
+                endgame(L"w");
             }
 
             if (i < 3 && j < 4 && grid[i][j] == grid[i + 1][j + 1] && grid[i][j] == grid[i + 2][j + 2] && grid[i][j] == grid[i + 3][j + 3] && grid[i][j] != 0) // diagonal down right
             {
-                endgame(false);
+                endgame(L"w");
             }
 
             if (i > 3 && j < 4 && grid[i][j] == grid[i - 1][j + 1] && grid[i][j] == grid[i - 2][j + 2] && grid[i][j] == grid[i - 3][j + 3] && grid[i][j] != 0) // diagonal down left
             {
-                endgame(false);
+                endgame(L"w");
             }
         }
     }
@@ -160,15 +168,22 @@ void Con4::display()
 
         for (int o = 0; o < 7; o++)
         {
-            row += L" " + to_wstring(grid[i][o]) + L" |";
+            wstring value = to_wstring(grid[i][o]);
+
+            if (value == L"0")
+            {
+                row += L"   |";
+            }
+            else
+            {
+                row += L" " + to_wstring(grid[i][o]) + L" |";
+            }
         }
         
         screenBuffer.writeToScreen(2, offset++, row);
 
         screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
     }
-
-    screenBuffer.writeToScreen(3, offset++, L"-------------" + to_wstring(grid[4][6])); // gives number when dropping in column 1. FIX
 }
 
 int Con4::connect4()
@@ -180,25 +195,26 @@ int Con4::connect4()
     populategrid();
 
     currentplayer = randomstarter();
-    /**/
+
+    display();
+    
     do
     {
         currentplayer = swapturn(currentplayer);
 
-        display();
-
         playerturn(currentplayer);
         
         screenBuffer.clearScreen();
-        
-        checkwin();
+
+        display();
 
         checkdraw();
+        
+        checkwin();
 
     } while (winquestionmark == false);
 
     screenBuffer.clearScreen();
 
     return 0;
-    // sysout player # wins
 }
