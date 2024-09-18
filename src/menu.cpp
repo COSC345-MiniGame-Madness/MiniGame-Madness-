@@ -6,6 +6,7 @@ Hnefatafl hnefataflGame;
 NaughtsxCrossess naughtsxCrossessGame;
 Hangman hangmanGame;
 WordScrambler wordScramblerGame;
+BattleshipGame battleshipGame;
 
 Con4 con4Game;
 
@@ -52,7 +53,7 @@ int Menu::startGame(int input)
         break;
     case 9:
         // Call function to start Battleship
-		Battleship();
+        battleshipGame.run();
         break;
     case 10:
         // Call function to start Minesweeper
@@ -62,7 +63,7 @@ int Menu::startGame(int input)
         // Call function to start Multiplayer Chess
         std::cout << "Comming Soon" << std::endl;
         break;
-    case 13:
+    case 12:
         // Exit the program
 		output = EXIT_GAME;
         break;
@@ -118,9 +119,9 @@ int Menu::displayMenu()
 		// Set screen buffer to active
 		screenBuffer.setActive();
 
-		// Row used to track the current selection and output of startGame
+		// Row used to track the current selection
         int row = 1;
-		int output = -1;
+        int output = -1;
 
         while (output == -1) {
             int ch = _getch();  // Read first input character
@@ -144,21 +145,16 @@ int Menu::displayMenu()
 						screenBuffer.writeToScreen(width, startY + row, text[row], ScreenBuffer::FOREGROUND_NORMAL, 4);
 					}
                     break;
-				default:
-					break;
                 }
 			}
             else if (ch == 13) {  // Enter key
 				output = startGame(row);
-                return output;
             }
         }
- 
+        return output;
     }
     catch (const std::exception& e)
     {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
-
-	return RETURN_TO_MENU;
 }
