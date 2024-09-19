@@ -78,7 +78,7 @@ std::string WordScrambler::toLowerCase(const std::string& str) {
 void WordScrambler::displayHint(const std::string& word) {
     if (!screenBuffer) return;
 
-    int length = word.length();
+    size_t length = word.length();
     char firstChar = word[0];
     char middleChar = word[length / 2];
     char lastChar = word[length - 1];
