@@ -109,6 +109,11 @@ void Con4::checkdraw()
     }
 }
 
+void Con4::setnum(int player, int xval, int yval)
+{
+    grid[yval][xval] = player;
+}
+
 void Con4::checkwin()
 {
     for(int i = 0; i < 6; i++)

@@ -12,16 +12,16 @@ namespace con4Tests
 
 		TEST_METHOD(testplayerswitch)
 		{
-			con4game game;
+			Con4 game;
 
 			Assert::AreEqual(1, swapturn(2));
 		}
 
 		TEST_METHOD(testdrop)
 		{
-			con4game game;
+			Con4 game;
 
-			grid[7][6] = {0};
+			grid[6][7] = {0};
 
 			game.dropcoin(7, 1);
 
@@ -30,9 +30,9 @@ namespace con4Tests
 
 		TEST_METHOD(testwin)
 		{
-			con4game game;
+			Con4 game;
 
-			grid[7][6] = {0};
+			grid[6][7] = {0};
 
 			game.dropcoin(7, 1);
 			game.dropcoin(6, 1);
@@ -46,9 +46,9 @@ namespace con4Tests
 
 		TEST_METHOD(testdraw)
 		{
-			con4game game;
+			Con4 game;
 
-			grid[7][6] = {0};
+			grid[6][7] = {0};
 
 			for(int toprow = 0; toprow < 7; toprow++)
 			{

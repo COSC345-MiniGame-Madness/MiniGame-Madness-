@@ -53,6 +53,14 @@ public:
     void checkdraw();
 
     /*!
+    * @brief Manually sets a position as a value given.
+    * @param player The player coin dropped
+    * @param xval The x coordinate of the value to be changed
+    * @param yval The y coordinate of the value to be changed
+    */
+    void setnum(int player, int xval, int yval);
+
+    /*!
      * @brief Checks if there is a winning condition on the board.
      */
     void checkwin();
