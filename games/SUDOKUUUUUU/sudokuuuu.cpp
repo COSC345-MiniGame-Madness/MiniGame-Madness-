@@ -4,12 +4,14 @@
 #include <algorithm>
 #include <random>
 #include <string>
+#include "sudokuuuu.h"
+#include "screenBuffer.h"
 
 using namespace std;
 
 int answer[9][9] = { 0 };
 
-bool uniquequestionmark(int grid[9][9], int row, int col, int num)
+bool uniquequestionmark(int grid[9][9], int row, int col, int num) // checks if number is in the row, column or inner square
 {
     for (int x = 0; x < 9; x++)
     {
@@ -35,7 +37,7 @@ bool uniquequestionmark(int grid[9][9], int row, int col, int num)
     return true;
 }
 
-void enternum(int grid[9][9])
+void enternum(int grid[9][9]) 
 {
     int answer, x, y;
     bool numbercheck = false;
@@ -87,7 +89,7 @@ void enternum(int grid[9][9])
     grid[x][y] = answer;
 }
 
-bool solver(int grid[9][9])
+bool solver(int grid[9][9]) // attempts to fill every empty cell with a valid number
 {
     int row, col;
     bool empty = false;
@@ -108,7 +110,7 @@ bool solver(int grid[9][9])
 
     if (!empty)
     {
-        return true; //all cells filled
+        return true; // all cells filled
     }
 
     int nums[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
