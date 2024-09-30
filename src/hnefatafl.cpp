@@ -108,15 +108,17 @@ std::pair<int, int> Hnefatafl::move(std::pair<int, int> source, std::pair<int, i
         }
     }
 
-	// If the piece is moved, update the board
-    board[currentRow][currentCol] = currentPlayer;
-    board[sourceRow][sourceCol] = EMPTY;
-
-	if (board[currentRow][currentCol] == KING && board[targetRow][targetCol] == KING_SQUARE) {
-		board[targetRow][targetCol] = KING;
+	// Check if the target position is a king's square
+    if (board[currentRow][currentCol] == KING && board[targetRow][targetCol] == KING_SQUARE) {
+        board[targetRow][targetCol] = KING;
         board[currentRow][currentCol] = EMPTY;
-	}
-	
+    }
+    else
+    {
+        board[currentRow][currentCol] = currentPlayer;
+        board[sourceRow][sourceCol] = EMPTY;
+    }
+
     return std::make_pair(currentRow, currentCol);
 };
 
@@ -199,12 +201,13 @@ bool Hnefatafl::isKingCaptured() {
 
 // Checks if the game is over (either by king capture or escape)
 bool Hnefatafl::isGameOver() {
-    if (isKingCaptured()) return true;
-
     if (board[0][0] == KING || board[0][10] == KING || board[10][0] == KING || board[10][10] == KING)
     {
         return true;
-    }
+	}
+	else if (isKingCaptured()) {
+		return true;
+	}
 
     return false;
 };
@@ -403,8 +406,12 @@ int  Hnefatafl::run() {
                     if ((sourceStr.length() == 2 && targetStr.length() == 2) || (sourceStr.length() == 3 && targetStr.length() == 2) || (sourceStr.length() == 2 && targetStr.length() == 3) || (sourceStr.length() == 3 && targetStr.length() == 3)) {
                         source = convertMove(sourceStr);
                         target = convertMove(targetStr);
-                        validInput = true;
                     }
+
+					// Check if the source piece belongs to the current player
+					if (board[source.first][source.second] == player) {
+						validInput = true;
+					}
                 }
                 else {
                     screenBuffer.writeToScreen(4, 24, L"Invalid input. Please enter your move in the format 'A1 B2':");

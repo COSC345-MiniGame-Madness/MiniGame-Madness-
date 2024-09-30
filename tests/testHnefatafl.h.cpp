@@ -120,9 +120,13 @@ namespace HnefataflTests
 
             // Move King
             game.move(std::make_pair(5, 5), std::make_pair(5, 3));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(5, 3)).c_str());
             game.move(std::make_pair(5, 3), std::make_pair(1, 3));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(1, 3)).c_str());
 			game.move(std::make_pair(1, 3), std::make_pair(1, 0));
+			Logger::WriteMessage(std::to_wstring(game.getPiece(1, 0)).c_str());
 			game.move(std::make_pair(1, 0), std::make_pair(0, 0));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(0, 0)).c_str());
 
             // Check if the game is over
             Assert::IsTrue(game.isGameOver());
@@ -175,6 +179,25 @@ namespace HnefataflTests
             Assert::IsFalse(game.isValidInput("11 22"));
             Assert::IsFalse(game.isValidInput("AA BB"));
             Assert::IsFalse(game.isValidInput("a1 B1"));
+        }
+
+		// Test if HandleNeighboursCaptured captures the correct pieces
+        TEST_METHOD(HandleNeighboursCaptured)
+        {
+            Hnefatafl game;
+
+            // Set up the board to capture a piece
+            game.move(std::make_pair(0, 3), std::make_pair(4, 3)); // Move black piece
+            game.move(std::make_pair(10, 3), std::make_pair(6, 3)); // Move black piece
+
+            // Call the handleNeighboursCaptured function
+            game.handleNeighboursCaptured(4, 3);
+
+            // Check if the neighboring pieces are captured
+            Assert::AreEqual(EMPTY, game.getPiece(3, 3)); // Up
+            Assert::AreEqual(EMPTY, game.getPiece(5, 3)); // Down
+            Assert::AreEqual(EMPTY, game.getPiece(4, 2)); // Left
+            Assert::AreEqual(WHITE, game.getPiece(4, 4)); // Right
         }
     };
 }

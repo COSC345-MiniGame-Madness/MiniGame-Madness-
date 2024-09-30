@@ -15,6 +15,7 @@ namespace testScreenBuffer
 
         TEST_METHOD(Constructor)
         {
+
             ScreenBuffer buffer;
             Assert::AreNotEqual(INVALID_HANDLE_VALUE, buffer.getScreenHandle());
         }
