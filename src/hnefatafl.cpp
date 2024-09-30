@@ -408,10 +408,10 @@ int  Hnefatafl::run() {
                         target = convertMove(targetStr);
                     }
 
-					// Check if the source piece belongs to the current player
-					if (board[source.first][source.second] == player) {
-						validInput = true;
-					}
+		    // Check if the source piece belongs to the current player
+		    if (board[source.first][source.second] == player || (player == WHITE && board[source.first][source.second] == KING)) {
+			validInput = true;
+		    }
                 }
                 else {
                     screenBuffer.writeToScreen(4, 24, L"Invalid input. Please enter your move in the format 'A1 B2':");
