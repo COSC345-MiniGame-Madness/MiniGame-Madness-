@@ -6,15 +6,5 @@
 
 ## Project Overview
 Our project, focuses on creating a collection of mini-games, each implemented as a simple command-line application. The essence of our project lies in its minimalist design, utilising ASCII art for the user interface while maintaining the core functionality of the original games. The aim is to recreate classic games like Minesweeper and Battleships, adhering to a 'back to basics' theme by stripping down the design to its most fundamental elements.
-## How to play 
-### Word Scramble 
-### Tic Tac Toe
-### Sudoku
-### Checkers
-### Maze Game
-### Hnefatafl
-### Checkers
-### Hangman
-### Minesweeper
-### Battleships
+
 
