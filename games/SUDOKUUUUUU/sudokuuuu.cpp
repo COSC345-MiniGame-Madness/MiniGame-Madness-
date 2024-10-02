@@ -11,7 +11,12 @@ using namespace std;
 
 int answer[9][9] = { 0 };
 
-bool uniquequestionmark(int grid[9][9], int row, int col, int num) // checks if number is in the row, column or inner square
+Sudokuuuu::Sudokuuuu()
+{
+    
+}
+
+bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) // checks if number is in the row, column or inner square
 {
     for (int x = 0; x < 9; x++)
     {
@@ -45,7 +50,7 @@ void enternum(int grid[9][9])
     do // Repeats until valid input is given
     {
         string input;
-        cout << "\nEnter number and coordinates in the format of 'number row*column': ";
+        screenBuffer.writeToScreen(0, 10, L"\nEnter number and coordinates in the format of 'number row*column': ");
         getline(cin, input);
 
         try {
@@ -67,7 +72,7 @@ void enternum(int grid[9][9])
 
             // Ensure coordinates are within bounds
             if (x < 1 || x > 9 || y < 1 || y > 9) {
-                cout << "Coordinates out of bounds. Enter positions between 1 and 9.\n";
+                screenBuffer.writeToScreen(0, 10, L"Coordinates out of bounds. Enter positions between 1 and 9.\n");
                 continue;
             }
 
@@ -79,10 +84,10 @@ void enternum(int grid[9][9])
 
         }
         catch (invalid_argument& e) {
-            cout << "Invalid input format. Please try again.\n";
+            screenBuffer.writeToScreen(0, 10, L"Invalid input format. Please try again.\n");
         }
         catch (out_of_range& e) {
-            cout << "Input is out of range. Please enter smaller numbers.\n";
+            screenBuffer.writeToScreen(0, 10, L"Input is out of range. Please enter smaller numbers.\n");
         }
     } while (!numbercheck);
 
@@ -162,14 +167,32 @@ void remover(int grid[9][9], int count)
 
 void display(int grid[9][9])
 {
+    screenBuffer.writeToScreen(5, 0, L"1   2   3   4   5   6   7");
+    screenBuffer.writeToScreen(3, 1, L"_____________________________");
+
+    int offset = 2;
+
     for (int row = 0; row < 9; row++)
     {
+        std::wstring row = L" |";
+
         for (int col = 0; col < 9; col++)
         {
-            cout << grid[row][col] << " ";
-        }
+            wstring value = to_wstring(grid[i][o]);
 
-        cout << endl;
+            if (value == L"0")
+            {
+                row += L"   |";
+            }
+            else
+            {
+                row += L" " + to_wstring(grid[i][o]) + L" |";
+            }
+        }
+        
+        screenBuffer.writeToScreen(2, offset++, row);
+
+        screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
     }
 }
 
@@ -186,31 +209,31 @@ void giveanswer(int original[9][9])
 
 int givepos(int row, int col)
 {
-
+    return answer[row][col];
 }
 
-int main()
+int Sudokuuuu::sudoku()
 {
     srand(time(0)); //random number generator
 
-    int grid[9][9] = { 0 }; //grid
+    //int grid[9][9] = { 0 }; //grid
 
-    generate(grid); //randomize grid
+    generate(input); //randomize grid
 
-    giveanswer(grid); // and save it to a second grid
+    giveanswer(input); // and save it to a second grid
 
-    remover(grid, 40); //remove numbers
+    remover(input, 40); //remove numbers
 
     do
     {
-        display(grid);
+        display(input);
         //cout << "\n\n";
         //display(answer);
 
-        enternum(grid);
-    } while (memcmp(answer, grid, sizeof(answer)) != 0);
+        enternum(input);
+    } while (memcmp(answer, input, sizeof(answer)) != 0);
 
-    cout << "You are winner. Now go outside" << endl;
+    screenBuffer.writeToScreen(0, 10, L"You are winner. Now go outside");
 
     return 0;
 }
