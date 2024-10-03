@@ -127,7 +127,7 @@ std::vector<std::pair<int, int>> Maze::randomWalk(std::pair<int, int> start) {
     std::pair<int, int> current = start;
 
     // Continue walking until a node in the maze is encountered
-    while (inMaze.find(current) == inMaze.end()) {
+    while (visited.find(current) == visited.end()) {
         path.push_back(current); 
 
         std::pair<int, int> next = nextStep(current);
@@ -151,46 +151,31 @@ void Maze::generateMaze(int width, int height) {
     HEIGHT = height;
 
     mazeMap.clear();
-    inMaze.clear();
+    visited.clear();
 
-    // Set to hold all available positions not yet in the maze
-    std::set<std::pair<int, int>> availablePositions;
 
     // Create nodes for each position in the maze
     for (int i = 0; i < WIDTH; i++) {
         for (int j = 0; j < HEIGHT; j++) {
             mazeMap[std::make_pair(i, j)] = std::make_unique<MazeNode>();
-            availablePositions.insert(std::make_pair(i, j));
+			if (i < WIDTH - 1) {
+				linkNodes(std::make_pair(i, j), std::make_pair(i + 1, j));
+			}
+            else {
+                linkNodes(std::make_pair(i, j), std::make_pair(i, j + 1));
+            }
         }
     }
 
     // Start maze at a random position
     std::pair<int, int> start = std::make_pair(rand() % WIDTH, rand() % HEIGHT);
-    inMaze.insert(start);
-    availablePositions.erase(start);
+ 
+}
 
-    // Continue generating the maze until all positions are in the maze
-    while (inMaze.size() < WIDTH * HEIGHT) {
-        // Get a random position to start the walk from
-        int randomIndex = rand() % availablePositions.size();
-        start = *std::next(availablePositions.begin(), randomIndex);
-        availablePositions.erase(start);
-
-        // Perform a random walk from the selected position
-        std::vector<std::pair<int, int>> path = randomWalk(start);
-
-        // Add the path to the maze and link nodes along the way
-        for (size_t i = 0; i < path.size(); ++i) {
-            const std::pair<int, int>& position = path[i];
-
-             inMaze.insert(position);
-
-            // Link the current node with the next node in the path
-            if (i < path.size() - 1) {
-                linkNodes(path[i], path[i + 1]);
-            }
-        }
-    }
+//Pick a random start and end position for the maze
+void Maze::chooseStartAndEnd() {
+	start = std::make_pair(0, rand() % WIDTH);
+	end = std::make_pair(HEIGHT - 1, rand() % WIDTH);
 }
 
 
@@ -199,35 +184,31 @@ void Maze::printMaze() {
     screenBuffer.clearScreen();
 
     for (int row = 0; row < HEIGHT; row++) {
-        std::wstring midRow = L"|";
-        std::wstring subRow = L"+";
-
         for (int col = 0; col < WIDTH; col++) {
             std::pair<int, int> position = std::make_pair(row, col);
+			screenBuffer.writeToScreen(col * pathWidth + 1, row * pathWidth + 1, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::BLUE);
 
-            // Vertical  wall (East connection)
-            if (mazeMap.at(position)->getNeighbor(Direction::EAST) == nullptr) {
-                midRow += L" |";  
-            }
-            else {
-                midRow += L"  ";  // No wall (open path)
-            }
+			// Add in paths for each node
+            //if (mazeMap.at(position)->getNeighbor(Direction::EAST) != nullptr){
+            //    screenBuffer.writeToScreen(col * pathWidth + 2, row * pathWidth + 1, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::BLUE);
+            //}
+            //else if (mazeMap.at(position)->getNeighbor(Direction::SOUTH) != nullptr) {
+            //    screenBuffer.writeToScreen(col * pathWidth + 1, row * pathWidth + 2, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::BLUE);
+            //}
 
-            // Horizontal wall (South connection)
-            if (mazeMap.at(position)->getNeighbor(Direction::SOUTH) == nullptr) {
-                subRow += L"-+";   
-            }
-            else {
-                subRow += L" +";   // No wall (open path)
-            }
+			// Add player position and start/end positions
+			if (position == playerPosition) {
+				screenBuffer.writeToScreen(col * pathWidth + 1, row * pathWidth + 1, L" ", ScreenBuffer::BLACK, ScreenBuffer::GREEN);
+			}
+			if (position == start) {
+				screenBuffer.writeToScreen(col * pathWidth + 1, row * pathWidth + 1, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::RED);
+			}
+			else if (position == end) {
+				screenBuffer.writeToScreen(col * pathWidth + 1, row * pathWidth + 1, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::RED);
+			}
         }
-
-        // Write the rows to the screen
-        screenBuffer.writeToScreen(0, row * 2, midRow);      
-        screenBuffer.writeToScreen(0, row * 2 + 1, subRow);  
     }
 }
-
 
 // Run the maze game
 int Maze::run() {
@@ -235,34 +216,39 @@ int Maze::run() {
 	//playerPosition = start;
 
 	// Print the maze
-    screenBuffer.setActive();
-	printMaze();
+	chooseStartAndEnd();
+	playerPosition = start;
+	std::pair<int, int> currentPosition;
 
-	Sleep(100000);
+	printMaze();
+    screenBuffer.setActive();
+
+	//Sleep(100000);
 
 	// Loop until the player reaches the end of the maze
 	while (playerPosition != end) {
 		// Get the player input
-		char input = _getch();
+		int input = _getch();
+		currentPosition = playerPosition;
 
 		// Move the player based on the input
 		switch (input) {
-		case 'w':
+		case VK_UP:
 			if (mazeMap.at(playerPosition)->getNeighbor(Direction::NORTH) != nullptr) {
 				playerPosition = std::make_pair(playerPosition.first, playerPosition.second - 1);
 			}
 			break;
-		case 's':
+		case VK_DOWN:
 			if (mazeMap.at(playerPosition)->getNeighbor(Direction::SOUTH) != nullptr) {
 				playerPosition = std::make_pair(playerPosition.first, playerPosition.second + 1);
 			}
 			break;
-		case 'a':
+		case VK_LEFT:
 			if (mazeMap.at(playerPosition)->getNeighbor(Direction::WEST) != nullptr) {
 				playerPosition = std::make_pair(playerPosition.first - 1, playerPosition.second);
 			}
 			break;
-		case 'd':
+		case VK_RIGHT:
 			if (mazeMap.at(playerPosition)->getNeighbor(Direction::EAST) != nullptr) {
 				playerPosition = std::make_pair(playerPosition.first + 1, playerPosition.second);
 			}
@@ -271,8 +257,9 @@ int Maze::run() {
 			break;
 		}
 
-		// Print the maze
-		printMaze();
+		screenBuffer.writeToScreen(currentPosition.second * pathWidth + 1, currentPosition.first * pathWidth + 1, L" ", ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::BLUE);
+		screenBuffer.writeToScreen(playerPosition.second * pathWidth + 1, playerPosition.first * pathWidth + 1, L"*", ScreenBuffer::BLACK, ScreenBuffer::GREEN);
+		currentPosition = playerPosition;
 	}
 
 	return 0;

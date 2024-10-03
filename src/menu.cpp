@@ -2,7 +2,7 @@
 
 // Initialize games
 Hnefatafl hnefataflGame;
-//Maze mazeGame(10,10);
+Maze mazeGame(20,10);
 
 NaughtsxCrossess naughtsxCrossessGame;
 Hangman hangmanGame;
@@ -30,7 +30,7 @@ int Menu::startGame(int input)
     case 3:
         // Call function to start Maze
         screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        //output = mazeGame.run();
+        output = mazeGame.run();
         break;
     case 4:
         // Call function to start Naughts and Crosses
