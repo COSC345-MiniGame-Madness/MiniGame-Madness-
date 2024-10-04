@@ -1,248 +1,279 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <ctime>
-#include <cstdlib>
-#include "screenBuffer.h"
-#include <conio.h>
+#include "maze.h"  
 
-using namespace std;
-
-// 2D array to store the maze
-vector<vector<int>> maze;
-
-/**
- * Function to check if a cell is within the maze and is a valid path
- * @param x X-coordinate of the cell
- * @param y Y-coordinate of the cell
- * @param width Width of the maze
- * @param height Height of the maze
- * @return bool
- */
-bool isValid(int x, int y, int width, int height)
-{
-    return x >= 0 && x < width && y >= 0 && y < height && maze[x][y] == 1;
+// Maze constructor with width and height
+Maze::Maze(int width, int height) {
+    srand(static_cast<unsigned int>(time(0)));
+    generateMaze(width, height);
 }
 
-/**
- * Function to recursively generate the maze
- * @param x X-coordinate of the current cell
- * @param y Y-coordinate of the current cell
- * @param width Width of the maze
- * @param height Height of the maze
- * @return void
- */
-void generateMazeRecursive(int x, int y, int width, int height)
-{
-    // Directions for moving (Right, Down, Left, Up)
-    vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-    // Shuffle directions to ensure randomness
-    random_shuffle(directions.begin(), directions.end());
-
-    // Iterate through each direction
-    for (auto dir : directions)
-    {
-        int newX = x + dir.first * 2;
-        int newY = y + dir.second * 2;
-
-        // Check if the new cell is valid and unvisited
-        if (isValid(newX, newY, width, height))
-        {
-            // Mark the new cell as empty
-            maze[newX][newY] = 0;
-
-            // Remove the wall between the current cell and the new cell
-            maze[x + dir.first][y + dir.second] = 0;
-
-            // Recursively generate the maze from the new cell
-            generateMazeRecursive(newX, newY, width, height);
-        }
-    }
+// Checks if position is vaild  
+bool Maze::isValidPosition(std::pair<int, int> position) const {
+    return (position.first >= 0 && position.first < WIDTH) &&
+        (position.second >= 0 && position.second < HEIGHT);
 }
 
-/**
- * Function to generate the maze
- * @param height Height of the maze
- * @param width Width of the maze
- * @return void
- */
-void generateMaze(int height, int width)
-{
-    // Initialize the maze with all walls
-    maze = vector<vector<int>>(height, vector<int>(width, 1));
 
-    // Set edge cells as walls
-    for (int i = 0; i < height; ++i)
-    {
-        maze[i][0] = 1;         // Left edge
-        maze[i][width - 1] = 1; // Right edge
-    }
-    for (int j = 0; j < width; ++j)
-    {
-        maze[0][j] = 1;          // Top edge
-        maze[height - 1][j] = 1; // Bottom edge
-    }
-
-    // Random seed
-    srand(time(0));
-
-    // Randomly select the starting point, ensuring it is not on the edge
-    int startX = 2 * (rand() % ((width - 2) / 2)) + 1;  // Ensure starting point is odd
-    int startY = 2 * (rand() % ((height - 2) / 2)) + 1; // Ensure starting point is odd
-
-    // Mark the starting point as empty
-    maze[startX][startY] = 0;
-
-    // Start maze generation from the starting point
-    generateMazeRecursive(startX, startY, width, height);
+// Picks a random direction to walk in  
+Direction Maze::pickRandomDirection(std::vector<Direction>& directions) {
+    return directions[rand() % directions.size()];
 }
 
-/**
- * Function to print the maze using the screen buffer
- * @param sb Screen buffer object
- * @return void
- */
-void printMaze(screenBuffer &sb)
-{
-    // Get the maze dimensions
-    int height = maze.size();
-    int width = maze[0].size();
+// Gets the opposite direction  
+Direction Maze::getOppositeDirection(Direction direction) const {  
+	Direction opposite = Direction::NORTH;
 
-    // Loop through the maze and print it
-    for (int y = 0; y < height; ++y)
-    {
-        for (int x = 0; x < width; ++x)
-        {
-            if (maze[x][y] == 1)
-            {
-                // Print walls
-                sb.writeToScreen(x, y, " ", 7, 7); // White text on white background
+    switch (direction) {
+    case Direction::NORTH:
+        opposite = Direction::SOUTH;
+		break;
+    case Direction::SOUTH:
+        opposite = Direction::NORTH;
+        break;
+    case Direction::EAST:
+        opposite = Direction::WEST;
+        break;
+    case Direction::WEST:
+        opposite = Direction::EAST;
+        break;
+    default: 
+        break;
+    }
+
+	return opposite;
+}  
+
+// Links nodes in the maze  
+void Maze::linkNodes(std::pair<int, int> start, std::pair<int, int> end) {  
+   // Get the nodes  
+   std::unique_ptr<MazeNode>& startNode = mazeMap[start];  
+   std::unique_ptr<MazeNode>& endNode = mazeMap[end];  
+
+   if (startNode && endNode) {
+       // Determine the direction based on position differences
+       Direction direction;
+       if (start.first == end.first) {
+           direction = (start.second < end.second) ? Direction::EAST : Direction::WEST;
+       }
+       else {
+           direction = (start.first < end.first) ? Direction::SOUTH : Direction::NORTH;
+       }
+
+       // Link the nodes
+       startNode->addNeighbor(endNode.get(), direction);
+       endNode->addNeighbor(startNode.get(), getOppositeDirection(direction));
+   }
+}  
+
+// Erase any loop that occurs in the walk
+std::vector<std::pair<int, int>> Maze::eraseLoop(std::vector<std::pair<int, int>> path, std::pair<int, int> current) {
+    auto startOfLoop = std::find(path.begin(), path.end(), current);
+    if (startOfLoop != path.end()) {
+        path.erase(startOfLoop + 1, path.end()); // Preserve 'current' in the path
+    }
+    return path;
+}
+
+ 
+// Next step in the walk  
+std::pair<int, int> Maze::nextStep(std::pair<int, int> current) {
+    std::vector<Direction> directions = { Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST };
+    std::pair<int, int> next = current;
+
+    // Keep picking directions until a valid position is found or no directions remain
+    while (directions.size() > 0) {
+        // Pick a random direction
+        Direction direction = pickRandomDirection(directions);
+
+        switch (direction) {
+        case Direction::NORTH:
+            if (current.second - 1 > OUT_OF_BOUNDS) {
+                next = std::make_pair(current.first, current.second - 1);
             }
-            else
-            {
-                // Print paths
-                sb.writeToScreen(x, y, " ", 0, 0); // Black text on black background
+            break;
+        case Direction::SOUTH:
+            if (current.second + 1 < HEIGHT) {
+                next = std::make_pair(current.first, current.second + 1);
+            }
+            break;
+        case Direction::EAST:
+            if (current.first + 1 < WIDTH) {
+                next = std::make_pair(current.first + 1, current.second);
+            }
+            break;
+        case Direction::WEST:
+            if (current.first - 1 > OUT_OF_BOUNDS) {
+                next = std::make_pair(current.first - 1, current.second);
+            }
+            break;
+        }
+
+        // If the next position is valid, return it
+        if (isValidPosition(next)) {
+            return next;
+        }
+
+        // Remove the chosen direction from the list since it led to an invalid move
+        directions.erase(std::remove(directions.begin(), directions.end(), direction), directions.end());
+    }
+
+    // If no valid moves are found, return the current position (i.e., no movement)
+    return next;
+}
+
+
+// Start random walk  
+std::vector<std::pair<int, int>> Maze::randomWalk(std::pair<int, int> start) {
+    std::vector<std::pair<int, int>> path;
+    std::pair<int, int> current = start;
+
+    // Continue walking until a node in the maze is encountered
+    while (inMaze.find(current) == inMaze.end()) {
+        path.push_back(current); 
+
+        std::pair<int, int> next = nextStep(current);
+
+        // If no valid movement is possible (next == current), break the loop
+        if (next == current) {
+            break;
+        }
+
+        current = next;
+        path = eraseLoop(path, current);
+    }
+
+    return path;
+}
+
+
+// Generate maze  
+void Maze::generateMaze(int width, int height) {
+    WIDTH = width;
+    HEIGHT = height;
+
+    mazeMap.clear();
+    inMaze.clear();
+
+    // Set to hold all available positions not yet in the maze
+    std::set<std::pair<int, int>> availablePositions;
+
+    // Create nodes for each position in the maze
+    for (int i = 0; i < WIDTH; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
+            mazeMap[std::make_pair(i, j)] = std::make_unique<MazeNode>();
+            availablePositions.insert(std::make_pair(i, j));
+        }
+    }
+
+    // Start maze at a random position
+    std::pair<int, int> start = std::make_pair(rand() % WIDTH, rand() % HEIGHT);
+    inMaze.insert(start);
+    availablePositions.erase(start);
+
+    // Continue generating the maze until all positions are in the maze
+    while (inMaze.size() < WIDTH * HEIGHT) {
+        // Get a random position to start the walk from
+        int randomIndex = rand() % availablePositions.size();
+        start = *std::next(availablePositions.begin(), randomIndex);
+        availablePositions.erase(start);
+
+        // Perform a random walk from the selected position
+        std::vector<std::pair<int, int>> path = randomWalk(start);
+
+        // Add the path to the maze and link nodes along the way
+        for (size_t i = 0; i < path.size(); ++i) {
+            const std::pair<int, int>& position = path[i];
+
+             inMaze.insert(position);
+
+            // Link the current node with the next node in the path
+            if (i < path.size() - 1) {
+                linkNodes(path[i], path[i + 1]);
             }
         }
     }
-
-    // Randomly select the entrance and exit points
-    int entranceX = 2 * (rand() % (width / 2));
-    int exitX = 2 * (rand() % (width / 2));
-
-    // Print entrance and exit points
-    sb.writeToScreen(entranceX, 0, " ", 2, 2);      // Green text on green background
-    sb.writeToScreen(exitX, height - 1, " ", 1, 1); // Red text on red background
-
-    // Move cursor to entrance of the maze
-    sb.setCursorPosition(entranceX, 0);
 }
 
-/**
- * Function to move through the maze
- * @param input User input
- * @param sb Screen buffer object
- * @return finished bolean of if the maze is finished
- */
-bool move(int input, screenBuffer &sb)
-{
-    // Get the maze dimensions
-    int height = maze.size();
-    int width = maze[0].size();
 
-    // Get the current cursor position
-    std::pair<int, int> postion = sb.getCursorPosition();
+// Print the maze to the console
+void Maze::printMaze() {
+    screenBuffer.clearScreen();
 
-    // Check if the current position is the exit
-    if (postion.second == height - 1)
-    {
-        // Print message and return
-        sb.writeToScreen(0, height + 1, "You have reached the exit!", 15, 0); // White text on black background
-        return true;
+    for (int row = 0; row < HEIGHT; row++) {
+        std::wstring midRow = L"|";
+        std::wstring subRow = L"+";
+
+        for (int col = 0; col < WIDTH; col++) {
+            std::pair<int, int> position = std::make_pair(row, col);
+
+            // Vertical  wall (East connection)
+            if (mazeMap.at(position)->getNeighbor(Direction::EAST) == nullptr) {
+                midRow += L" |";  
+            }
+            else {
+                midRow += L"  ";  // No wall (open path)
+            }
+
+            // Horizontal wall (South connection)
+            if (mazeMap.at(position)->getNeighbor(Direction::SOUTH) == nullptr) {
+                subRow += L"-+";   
+            }
+            else {
+                subRow += L" +";   // No wall (open path)
+            }
+        }
+
+        // Write the rows to the screen
+        screenBuffer.writeToScreen(0, row * 2, midRow);      
+        screenBuffer.writeToScreen(0, row * 2 + 1, subRow);  
     }
-
-    // Check the user input and move accordingly
-    switch (input)
-    {
-    case 'w': // Up
-        if (isValid(postion.first, postion.second - 1, width, height))
-        {
-            // remove the player character
-            sb.writeToScreen(postion.first, postion.second, " ", 0, 0);
-
-            sb.setCursorPosition(postion.first, postion.second - 1);
-
-            // Print the player character
-            sb.writeToScreen(postion.first, postion.second - 1, "*", 3, 3);
-        }
-        break;
-    case 's': // Down
-        if (isValid(postion.first, postion.second + 1, width, height))
-        {
-            // remove the player character
-            sb.writeToScreen(postion.first, postion.second, " ", 0, 0);
-
-            sb.setCursorPosition(postion.first, postion.second + 1);
-
-            // Print the player character
-            sb.writeToScreen(postion.first, postion.second + 1, "*", 3, 3);
-        }
-        break;
-    case 'a': // Left
-        if (isValid(postion.first - 1, postion.second, width, height))
-        {
-            // remove the player character
-            sb.writeToScreen(postion.first, postion.second, " ", 0, 0);
-
-            sb.setCursorPosition(postion.first - 1, postion.second);
-
-            // Print the player character
-            sb.writeToScreen(postion.first - 1, postion.second, "*", 3, 3);
-        }
-        break;
-    case 'd': // Right
-        if (isValid(postion.first + 1, postion.second, width, height))
-        {
-            // remove the player character
-            sb.writeToScreen(postion.first, postion.second, " ", 0, 0);
-
-            sb.setCursorPosition(postion.first + 1, postion.second);
-
-            // Print the player character
-            sb.writeToScreen(postion.first + 1, postion.second, "*", 3, 3);
-        }
-        break;
-    default:
-        break;
-    }
-
-    return false;
 }
 
-int main()
-{
-    // Create a screen buffer object
-    screenBuffer sb;
 
-    // Generate the maze
-    generateMaze(71, 71);
+// Run the maze game
+int Maze::run() {
+	// Set the player position to the start of the maze
+	//playerPosition = start;
 
-    // Print the maze using the screen buffer
-    printMaze(sb);
-    SetConsoleActiveScreenBuffer(sb.getScreenHandle());
+	// Print the maze
+    screenBuffer.setActive();
+	printMaze();
 
-    // Wait for user input
-    bool finished = false;
-    while (!finished)
-    {
+	Sleep(100000);
 
-        if (_kbhit())
-        {
-            // Move through the maze
-            finished = move(_getch(), sb);
-        }
-    }
+	// Loop until the player reaches the end of the maze
+	while (playerPosition != end) {
+		// Get the player input
+		char input = _getch();
 
-    return 0;
+		// Move the player based on the input
+		switch (input) {
+		case 'w':
+			if (mazeMap.at(playerPosition)->getNeighbor(Direction::NORTH) != nullptr) {
+				playerPosition = std::make_pair(playerPosition.first, playerPosition.second - 1);
+			}
+			break;
+		case 's':
+			if (mazeMap.at(playerPosition)->getNeighbor(Direction::SOUTH) != nullptr) {
+				playerPosition = std::make_pair(playerPosition.first, playerPosition.second + 1);
+			}
+			break;
+		case 'a':
+			if (mazeMap.at(playerPosition)->getNeighbor(Direction::WEST) != nullptr) {
+				playerPosition = std::make_pair(playerPosition.first - 1, playerPosition.second);
+			}
+			break;
+		case 'd':
+			if (mazeMap.at(playerPosition)->getNeighbor(Direction::EAST) != nullptr) {
+				playerPosition = std::make_pair(playerPosition.first + 1, playerPosition.second);
+			}
+			break;
+		default:
+			break;
+		}
+
+		// Print the maze
+		printMaze();
+	}
+
+	return 0;
 }

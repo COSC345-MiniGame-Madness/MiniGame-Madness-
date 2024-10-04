@@ -1,157 +1,187 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
-#include <cstring> // For std::strcmp
+#include "Hangman.h"
+#include <cctype>  // For std::tolower
+#include <thread>  // For sleep
+#include <chrono>  // For setting sleep duration
 
-using namespace std;
-
-void clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
+void Hangman::clearScreen() {
+    screenBuffer->clearScreen(); // Use ScreenBuffer to clear the screen
 }
 
-void displayHangman(int wrongGuesses) {
-    string hangmanArt[] = {
-        "  +---+\n      |\n      |\n      |\n     ===",
-        "  +---+\n  O   |\n      |\n      |\n     ===",
-        "  +---+\n  O   |\n  |   |\n      |\n     ===",
-        "  +---+\n  O   |\n /|\\  |\n      |\n     ===",
-        "  +---+\n  O   |\n /|\\  |\n /    |\n     ===",
-        "  +---+\n  O   |\n /|\\  |\n / \\  |\n     ==="
+void Hangman::displayHangman(int wrongGuesses) {
+    std::wstring hangmanArt[] = {
+        L"  +---+\n      |\n      |\n      |\n     ===",
+        L"  +---+\n  O   |\n      |\n      |\n     ===",
+        L"  +---+\n  O   |\n  |   |\n      |\n     ===",
+        L"  +---+\n  O   |\n /|\\  |\n      |\n     ===",
+        L"  +---+\n  O   |\n /|\\  |\n /    |\n     ===",
+        L"  +---+\n  O   |\n /|\\  |\n / \\  |\n     ==="
     };
     if (wrongGuesses >= 0 && wrongGuesses < 7) {
-        cout << hangmanArt[wrongGuesses] << endl;
+        screenBuffer->writeToScreen(0, 2, hangmanArt[wrongGuesses]); // Output hangman art starting from row 2
     }
 }
 
-string getRandomWord(const string& filename) {
-    vector<string> words;
-    ifstream file(filename);
-    string word;
+std::string Hangman::getRandomWord(const std::string& filename) {
+    std::vector<std::string> words;
+    std::ifstream file(filename);
+
+    if (!file.is_open()) {
+        std::wstring errorMessage = L"Error: Could not open file " + std::wstring(filename.begin(), filename.end());
+        screenBuffer->writeToScreen(0, 0, errorMessage);
+        return "";
+    }
+
+    std::string word;
     while (file >> word) {
         words.push_back(word);
     }
     file.close();
-    srand(time(0));
+
+    if (words.empty()) {
+        std::wstring errorMessage = L"Error: No words found in file " + std::wstring(filename.begin(), filename.end());
+        screenBuffer->writeToScreen(0, 0, errorMessage);
+        return "";
+    }
+
+    srand(static_cast<unsigned int>(time(0)));
     int randomIndex = rand() % words.size();
     return words[randomIndex];
 }
 
-void playHangman(const string& difficulty) {
-    string filename;
+void Hangman::playHangman(const std::string& difficulty) {
+    std::string filename;
     if (difficulty == "1" || difficulty == "easy") {
+        filename = "../MiniGame-Madness/src/easy.txt";
+    }
+    else if (difficulty == "2" || difficulty == "medium") {
+        filename = "../MiniGame-Madness/src/medium.txt";
+    }
+    else if (difficulty == "3" || difficulty == "hard") {
+        filename = "../MiniGame-Madness/src/hard.txt";
+    }
+    else if (difficulty == "testcode") {
         filename = "easy.txt";
-    } else if (difficulty == "2" || difficulty == "medium") {
-        filename = "medium.txt";
-    } else if (difficulty == "3" || difficulty == "hard") {
-        filename = "hard.txt";
-    } else {
-        cout << "Invalid difficulty level. Exiting game." << endl;
+    }
+    else {
+        screenBuffer->writeToScreen(0, 0, L"Invalid difficulty level. Exiting game.");
         return;
     }
-string word = getRandomWord(filename);
-    string guessedWord(word.length(), '_');
+
+    std::string word = getRandomWord(filename);
+    std::string guessedWord(word.length(), '_');
     int wrongGuesses = 0;
     const int maxWrongGuesses = 6;
-    vector<char> guessedLetters;
+    std::vector<char> guessedLetters;
+
+    screenBuffer->writeToScreen(0, 1, L"The word to guess is: " + std::wstring(word.begin(), word.end()));  // For testing, will remove later
+    //screenBuffer->getBlockingInput();  // Pause for testing
 
     while (wrongGuesses < maxWrongGuesses && guessedWord != word) {
-        clearScreen(); // Clear the screen
+        clearScreen();
 
-        cout << "Guessed word: " << guessedWord << endl;
+        // Display the current guessed word (with guessed letters in place)
+        screenBuffer->writeToScreen(0, 0, std::wstring(guessedWord.begin(), guessedWord.end()));
+
+        // Display hangman figure
         displayHangman(wrongGuesses);
-        cout << "Guess a letter (or type 'stop' to exit): ";
-        string input;
-        cin >> input;
+
+        screenBuffer->writeToScreen(0, 8, L"Guess a letter (or type 'stop' to exit): ");
+        std::string input = screenBuffer->getBlockingInput();
 
         if (input == "stop") {
-            cout << "Game stopped. Exiting..." << endl;
+            screenBuffer->writeToScreen(0, 9, L"Game stopped. Exiting...");
             return;
         }
 
-        char guess = input[0];
+        // Convert the guess to lowercase for case-insensitive comparison
+        char guess = std::tolower(input[0]);
         bool validInput = true;
 
         if (input.length() != 1 || !isalpha(guess)) {
-            cout << "Invalid input. Please enter a single letter." << endl;
+            screenBuffer->writeToScreen(0, 9, L"Invalid input. Please enter a single letter.");
             validInput = false;
-        } else if (find(guessedLetters.begin(), guessedLetters.end(), guess) != guessedLetters.end()) {
-            cout << "You already guessed that letter!" << endl;
+        }
+        else if (find(guessedLetters.begin(), guessedLetters.end(), guess) != guessedLetters.end()) {
+            screenBuffer->writeToScreen(0, 9, L"You already guessed that letter!");
             validInput = false;
         }
 
         if (!validInput) {
-            // Wait for user to acknowledge the message
-            cout << "Press Enter to continue...";
-            cin.ignore(); // Ignore any leftover newline characters
-            cin.get(); // Wait for Enter key press
+            screenBuffer->writeToScreen(0, 10, L"Invalid guess, try again.");
+            std::this_thread::sleep_for(std::chrono::milliseconds(700));  // Pause for 1.5 seconds
             continue;
         }
 
         guessedLetters.push_back(guess);
         bool correctGuess = false;
+
+        // Update guessed word based on the current guess, handling case-insensitive matching
         for (size_t i = 0; i < word.length(); ++i) {
-            if (word[i] == guess) {
-                guessedWord[i] = guess;
+            if (std::tolower(word[i]) == guess) {
+                guessedWord[i] = word[i];  // Keep the original case of the word
                 correctGuess = true;
             }
         }
+
+        // Display feedback to the user
+        if (correctGuess) {
+            screenBuffer->writeToScreen(0, 9, L"Correct guess!");
+        }
+        else {
+            screenBuffer->writeToScreen(0, 9, L"Wrong guess!");
+        }
+
+        // Pause for 1.5 seconds before continuing
+        std::this_thread::sleep_for(std::chrono::milliseconds(700));
 
         if (!correctGuess) {
             ++wrongGuesses;
         }
     }
 
-    clearScreen(); // Clear the screen before ending the game
+    clearScreen();
     if (guessedWord == word) {
-        cout << "Congratulations! You guessed the word: " << word << endl;
-    } else {
+        screenBuffer->writeToScreen(0, 0, L"Congratulations! You guessed the word: " + std::wstring(word.begin(), word.end()));
+    }
+    else {
         displayHangman(5);
-        cout << "Sorry, you lost. The word was: " << word << endl;
+        screenBuffer->writeToScreen(0, 7, L"Sorry, you lost. The word was: " + std::wstring(word.begin(), word.end()));
     }
 }
 
-
-bool isYes(const string& response) {
+bool Hangman::isYes(const std::string& response) {
     return response == "y" || response == "Y" || response == "yes" || response == "YES";
 }
 
-bool isNo(const string& response) {
+bool Hangman::isNo(const std::string& response) {
     return response == "n" || response == "N" || response == "no" || response == "NO";
 }
 
-int main() {
-    string playAgain;
+void Hangman::hangman() {
+    screenBuffer->setActive();
+    std::string playAgain;
 
     do {
-        clearScreen(); // Clear the screen at the start of each game
-        cout << "Choose difficulty (1:easy, 2:medium, 3:hard) or type 'stop' to exit: ";
-        string difficulty;
-        cin >> difficulty;
+        clearScreen();
+        screenBuffer->writeToScreen(0, 0, L"Choose difficulty (1:easy, 2:medium, 3:hard) or type 'stop' to exit: ");
+        std::string difficulty = screenBuffer->getBlockingInput();
 
         if (difficulty == "stop") {
-            cout << "Game stopped. Exiting..." << endl;
-            return 0;
+            screenBuffer->writeToScreen(0, 1, L"Game stopped. Exiting...");
+            return;
         }
 
         playHangman(difficulty);
 
-        cout << "Do you want to play again? (y/n or type 'stop' to exit): ";
-        cin >> playAgain;
+        screenBuffer->writeToScreen(0, 12, L"Do you want to play again? (y/n or type 'stop' to exit): ");
+        playAgain = screenBuffer->getBlockingInput();
 
         if (playAgain == "stop") {
-            cout << "Game stopped. Exiting..." << endl;
-            return 0;
+            screenBuffer->writeToScreen(0, 13, L"Game stopped. Exiting...");
+            return;
         }
 
     } while (isYes(playAgain));
 
-    cout << "Thanks for playing!" << endl;
-    return 0;
+    screenBuffer->writeToScreen(0, 14, L"Thanks for playing!");
 }
