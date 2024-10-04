@@ -13,7 +13,7 @@ int answer[9][9] = { 0 };
 
 Sudokuuuu::Sudokuuuu()
 {
-    
+    generate(answer); //randomize grid
 }
 
 bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) // checks if number is in the row, column or inner square
@@ -218,7 +218,7 @@ int Sudokuuuu::sudoku()
 
     //int grid[9][9] = { 0 }; //grid
 
-    generate(input); //randomize grid
+    //generate(answer); //randomize grid
 
     giveanswer(input); // and save it to a second grid
 
