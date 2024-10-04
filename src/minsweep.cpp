@@ -1,39 +1,38 @@
 #include <iostream>
-#include <string>
+#include "minsweep.h"
+#include "screenBuffer.h"
 
 //char grid[][];
-int wide = 8;
+int widened = 8;
 bool finquestionmark = false, winquestionmark = false, kaboomquestionmark = false;
 
-bool endgame() // g
+void endgame() // g
 {
-    return false;
+    winquestionmark = false;
 }
 
-void populategrid(char diff)
+void populategrid(string diff)
 {
-    int max, min, mines;
+    int max, min, mines, wide = 8;
 
-    do
+    if (diff == "e")
     {
-        if (diff == 'e')
-        {
-            wide = 8;
-            max = 10;
-            min = 8;
-        } else if (diff == 'm')
-        {
-            wide = 14;
-            max = 10;
-            min = 8;
-        } else if (diff == 'h')
-        {
-            wide = 25;
-            max = 10;
-            min = 8;
-        }
-    } while (diff);
+        wide = 8;
+        max = 10;
+        min = 8;
+    } else if (diff == "m")
+    {
+        wide = 14;
+        max = 10;
+        min = 8;
+    } else if (diff == "h")
+    {
+        wide = 25;
+        max = 10;
+        min = 8;
+    }
     
+    widened = wide;
     int grid[wide][wide];
 
     mines = min + (rand() % max);
@@ -97,9 +96,9 @@ void populategrid(char diff)
 
 void checkwin()
 {
-    for(int i = 0; i < wide; i++)
+    for(int i = 0; i < widened; i++)
     {
-        for(int j = 0; j < wide; j++)
+        for(int j = 0; j < widened; j++)
         {
             
         }
@@ -111,21 +110,26 @@ void kaboom()
     kaboomquestionmark = true;
 }
 
-void makemove(int xcoords, int ycoords)
+void makemove(/*int xcoords, int ycoords*/)
 {
-    if 
+    screenBuffer.writeToScreen(0, 16, L"Enter coordinates in format of 'x y'");
+    string input = screenBuffer.getBlockingInput();
+
+    int xinp = stoi(""), yinp = stoi("");
+
+    
 }
 
 int minsweep()
 {
-    char difficulty = 'x';
+    string difficulty = "x";
 
     do
     {
-        printf("choose difficulty: e for easy, m for medium, h for hard\n");
-        scanf("%c", &difficulty); // choose difficulty
+        screenBuffer.writeToScreen(0, 14, L"choose difficulty: e for easy, m for medium, h for hard\n");
+        difficulty = screenBuffer.getBlockingInput(); // choose difficulty
     } 
-    while (difficulty != 'e' && difficulty != 'm' && difficulty != 'h');
+    while (difficulty != "e" && difficulty != "m" && difficulty != "h");
 
     populategrid(difficulty);
 
@@ -147,7 +151,7 @@ int minsweep()
             break;
         }
 
-        makemove()
+        makemove();
     }
 
     endgame();
