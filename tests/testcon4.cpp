@@ -6,33 +6,29 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace con4Tests
 {
-    TEST_CLASS(con4Tests)
-    {
+	TEST_CLASS(con4Tests)
+	{
 	public:
 
 		TEST_METHOD(testplayerswitch)
 		{
 			Con4 game;
 
-			Assert::AreEqual(1, swapturn(2));
+			Assert::AreEqual(1, game.swapturn(2));
 		}
 
 		TEST_METHOD(testdrop)
 		{
 			Con4 game;
 
-			grid[6][7] = {0};
-
 			game.dropcoin(7, 1);
 
-			Assert::AreEqual(1, grid[0][7]);
+			Assert::AreEqual(1, game.getnum(6, 5));
 		}
 
 		TEST_METHOD(testwin)
 		{
 			Con4 game;
-
-			grid[6][7] = {0};
 
 			game.dropcoin(7, 1);
 			game.dropcoin(6, 1);
@@ -41,23 +37,32 @@ namespace con4Tests
 
 			game.checkwin();
 
-			Assert::AreEqual(game.winquestionmark, true);
+			Assert::IsTrue(game.winquestionmark);
 		}
 
 		TEST_METHOD(testdraw)
 		{
 			Con4 game;
 
-			grid[6][7] = {0};
+			int num = 1;
 
-			for(int toprow = 0; toprow < 7; toprow++)
+			for (int toprow = 0; toprow < 7; toprow++)
 			{
-				game.setnum(1, toprow, 0);
+				if (num == 1)
+				{
+					game.setnum(num, toprow, 0);
+					num = 2;
+				}
+				else 
+				{
+					game.setnum(num, toprow, 0);
+					num = 1;
+				}
 			}
 
 			game.checkdraw();
 
-			Assert::AreEqual(game.winquestionmark, true);
+			Assert::IsTrue(game.winquestionmark);
 		}
-	}
+	};
 }

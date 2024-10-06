@@ -15,7 +15,7 @@ using namespace std;
  * @brief Class to handle the Connect 4 game logic.
  */
 class Con4 {
-private:
+public:
     int grid[6][7];
 	int player1 = 1, player2 = 2; //1 for player 1, 2 for 2, 0 for empty space.
     int currentplayer;
@@ -29,7 +29,6 @@ private:
      */
     void endgame(wstring letter);
 
-public:
     /*!
      * @brief Constructor for the Connect4 class.
      */
@@ -59,6 +58,13 @@ public:
     * @param yval The y coordinate of the value to be changed
     */
     void setnum(int player, int xval, int yval);
+
+    /*!
+    * @brief returns number at given x and y positions
+    * @param xval The x coordinate of the grid
+    * @param yval The y coordinate of the grid
+    */
+    int getnum(int xval, int yval);
 
     /*!
      * @brief Checks if there is a winning condition on the board.

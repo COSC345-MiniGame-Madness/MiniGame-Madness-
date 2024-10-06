@@ -21,20 +21,14 @@ void Con4::endgame(wstring letter) // end game
     if (letter == win)
     {
         screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" wins.");
-
-        screenBuffer.getBlockingInput();
     }
     else if (letter == surrender)
     {
         screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" surrenders.");
-
-        screenBuffer.getBlockingInput();
     }
     else if (letter == draw)
     {
         screenBuffer.writeToScreen(0, 16, L"Draw.");
-
-        screenBuffer.getBlockingInput();
     }
 
     winquestionmark = true;
@@ -116,6 +110,11 @@ void Con4::checkdraw()
 void Con4::setnum(int player, int xval, int yval)
 {
     grid[yval][xval] = player;
+}
+
+int Con4::getnum(int xval, int yval)
+{
+    return grid[yval][xval];
 }
 
 void Con4::checkwin()
@@ -220,6 +219,11 @@ int Con4::connect4()
         checkdraw();
         
         checkwin();
+
+        if (winquestionmark)
+        {
+            screenBuffer.getBlockingInput();
+        }
 
     } while (winquestionmark == false);
 
