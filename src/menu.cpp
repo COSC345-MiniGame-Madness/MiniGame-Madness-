@@ -11,6 +11,8 @@ BattleshipGame battleshipGame;
 
 Con4 con4Game;
 
+Sudokuuuu sudokuGame;
+
 
 // Input function to start each game
 int Menu::startGame(int input)
@@ -47,7 +49,8 @@ int Menu::startGame(int input)
         break;
     case 7:
         // Call function to start Sudoku
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED,ScreenBuffer::BACKGROUND_NORMAL);
+        //screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED,ScreenBuffer::BACKGROUND_NORMAL);
+        output = sudokuGame.sudoku();
         break;
     case 8:
         // Call function to start Word Scramble

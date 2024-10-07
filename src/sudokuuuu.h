@@ -29,26 +29,26 @@ class Sudokuuuu
 
         /// @brief 
         /// @return 
-        bool uniquequestionmark();
+        bool uniquequestionmark(int grid[9][9], int row, int col, int num);
 
         /// @brief 
-        void enternum();
+        void enternum(int grid[9][9]);
 
         /// @brief 
         /// @return 
-        bool solver();
+        bool solver(int grid[9][9]);
 
         /// @brief 
-        void generate();
+        void generate(int grid[9][9]);
 
         /// @brief 
-        void remover();
+        void remover(int grid[9][9], int count);
 
         /// @brief 
-        void display();
+        void display(int grid[9][9]);
 
         /// @brief 
-        void giveanswer();
+        void giveanswer(int original[9][9]);
 
         /// @brief 
         /// @return 

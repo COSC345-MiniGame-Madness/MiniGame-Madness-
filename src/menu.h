@@ -12,6 +12,7 @@
 #include "con4.h"
 #include "maze.h"
 #include "hnefatafl.h"  
+#include "sudokuuuu.h"
 #include "wordScrambler.h"
 #include "BattleshipGame.h"
 #include "NaughtsxCrossess.h"

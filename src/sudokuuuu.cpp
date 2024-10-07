@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int answer[9][9] = { 0 };
+//int answer[9][9] = { 0 };
 
 Sudokuuuu::Sudokuuuu()
 {
@@ -42,7 +42,7 @@ bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) //
     return true;
 }
 
-void enternum(int grid[9][9]) 
+void Sudokuuuu::enternum(int grid[9][9])
 {
     int answer, x, y;
     bool numbercheck = false;
@@ -94,7 +94,7 @@ void enternum(int grid[9][9])
     grid[x][y] = answer;
 }
 
-bool solver(int grid[9][9]) // attempts to fill every empty cell with a valid number
+bool Sudokuuuu::solver(int grid[9][9]) // attempts to fill every empty cell with a valid number
 {
     int row, col;
     bool empty = false;
@@ -145,12 +145,12 @@ bool solver(int grid[9][9]) // attempts to fill every empty cell with a valid nu
     return false; //trigger backtracking
 }
 
-void generate(int grid[9][9])
+void Sudokuuuu::generate(int grid[9][9])
 {
     solver(grid);
 }
 
-void remover(int grid[9][9], int count)
+void Sudokuuuu::remover(int grid[9][9], int count)
 {
     while (count > 0)
     {
@@ -165,7 +165,7 @@ void remover(int grid[9][9], int count)
     }
 }
 
-void display(int grid[9][9])
+void Sudokuuuu::display(int grid[9][9])
 {
     screenBuffer.writeToScreen(5, 0, L"1   2   3   4   5   6   7");
     screenBuffer.writeToScreen(3, 1, L"_____________________________");
@@ -196,7 +196,7 @@ void display(int grid[9][9])
     }
 }
 
-void giveanswer(int original[9][9])
+void Sudokuuuu::giveanswer(int original[9][9])
 {
     for (int row = 0; row < 9; row++)
     {
@@ -207,7 +207,7 @@ void giveanswer(int original[9][9])
     }
 }
 
-int givepos(int row, int col)
+int Sudokuuuu::givepos(int row, int col)
 {
     return answer[row][col];
 }
