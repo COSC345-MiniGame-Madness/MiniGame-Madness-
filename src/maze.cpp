@@ -160,34 +160,19 @@ void Maze::generateMaze(int width, int height) {
     for (int i = 0; i < WIDTH; i++) {
         for (int j = 0; j < HEIGHT; j++) {
             mazeMap[std::make_pair(i, j)] = std::make_unique<MazeNode>();
-            availablePositions.insert(std::make_pair(i, j));
         }
     }
 
-    // Start maze at a random position
-    std::pair<int, int> start = std::make_pair(rand() % WIDTH, rand() % HEIGHT);
-    visited.insert(start);
-    availablePositions.erase(start);
+    for (int i = 0; i < WIDTH; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
+            // Link east if not on the right edge
+            if (j + 1 < HEIGHT) {
+                linkNodes(std::make_pair(i, j), std::make_pair(i, j + 1));
+            }
 
-    // Continue generating the maze until all positions are in the maze
-    while (visited.size() < WIDTH * HEIGHT) {
-        // Get a random position to start the walk from
-        int randomIndex = rand() % availablePositions.size();
-        start = *std::next(availablePositions.begin(), randomIndex);
-        availablePositions.erase(start);
-
-        // Perform a random walk from the selected position
-        std::vector<std::pair<int, int>> path = randomWalk(start);
-
-        // Add the path to the maze and link nodes along the way
-        for (size_t i = 0; i < path.size(); ++i) {
-            const std::pair<int, int>& position = path[i];
-
-            visited.insert(position);
-
-            // Link the current node with the next node in the path
-            if (i < path.size() - 1) {
-                linkNodes(path[i], path[i + 1]);
+            // Link south if not on the bottom edge
+            if (i + 1 < WIDTH) {
+                linkNodes(std::make_pair(i, j), std::make_pair(i + 1, j));
             }
         }
     }

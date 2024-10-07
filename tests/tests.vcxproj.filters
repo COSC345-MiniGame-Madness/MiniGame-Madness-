@@ -39,9 +39,6 @@
     <ClCompile Include="testnaughtsxcrosses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testMaze.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
