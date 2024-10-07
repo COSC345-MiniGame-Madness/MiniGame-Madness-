@@ -1,4 +1,7 @@
+#include <iostream>
 #include "chckrs.h"
+#include "screenBuffer.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -6,7 +9,12 @@ int checkersGrid[8][8];
 int player1 = 1, player2 = 2, currentplaying = 1;
 bool winnerquestionmark = false;
 
-void populateCheckersGrid()
+Checkers::Checkers()
+{
+    populateCheckersGrid();
+}
+
+void Checkers::populateCheckersGrid()
 {
     for (int i = 0; i < 7; i++)
     {
@@ -28,7 +36,7 @@ void populateCheckersGrid()
     }
 }
 
-void forcejump(int playerturn, string piece) // piece should be like x 1, y 0 as 10
+void Checkers::forcejump(int playerturn) // piece should be like x 1, y 0 as 10
 {
     if (playerturn == 1)
     {
@@ -56,7 +64,7 @@ void forcejump(int playerturn, string piece) // piece should be like x 1, y 0 as
     }
 }
 
-void checkwin()
+void Checkers::checkwin()
 {
     bool one = false, two = false;
 
@@ -78,12 +86,69 @@ void checkwin()
     }
 }
 
-void playerturn(int curre)
+void Checkers::playerturn(int curre)
 {
+    screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" input move as '<piece>x y <move>x y'");
 
+    string input = screenBuffer.getBlockingInput();
+
+    string s;
+
+    stringstream ss(input);
+
+    vector<string> v;
+
+    while (getline(ss, s, ' '))
+    {
+        v.push_back(s);
+    }
+
+    int piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]);
+
+    if (curre == 1)
+    {
+        while (checkersGrid[xinp][yinp] != curre)
+        {
+            v.clear();
+
+            screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
+
+            input = screenBuffer.getBlockingInput();
+
+            stringstream ss(input);
+
+            while (getline(ss, s, ' '))
+            {
+                v.push_back(s);
+            }
+        }
+
+        if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 || checkersGrid[piecexpos - 1][pieceypos - 1] == 2 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 2 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0))) // backward captures
+        {
+
+        } else
+        {
+
+        }
+
+        if ()
+        {
+
+        }
+    }
+    else
+    {
+        if (/*(checkersGrid[piecex - 1][piecey - 1] == 2 && checkersGrid[piecex - 2][piecey - 2] == 0) || (checkersGrid[piecex + 1][piecey - 1] == 2 && checkersGrid[piecex + 2][piecey - 2] == 0)*/true) // backward captures
+        {
+
+        } else
+        {
+
+        }
+    }
 }
 
-void move(int playerturn, string piece)
+void Checkers::move(int playerturn)
 {
     if (playerturn == 1)
     {
@@ -91,12 +156,12 @@ void move(int playerturn, string piece)
     }
 }
 
-int randomstarter()
+int Checkers::randomstarter()
 {
     return 1 + (rand() % 2);
 }
 
-void swapturn(int playert)
+void Checkers::swapturn(int playert)
 {
     if (playert == 1)
     {
@@ -107,7 +172,7 @@ void swapturn(int playert)
     }
 }
 
-void display()
+void Checkers::display()
 {
     cout << "\t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \n";
 
@@ -120,7 +185,7 @@ void display()
     }
 }
 
-void checkers()
+void Checkers::checkersGam()
 {
     populateCheckersGrid();
 
