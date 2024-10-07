@@ -104,17 +104,17 @@ void Checkers::playerturn(int curre)
     }
 
     int piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]); // piece x position, piece y position, move to x coord, move to y coord
-    bool mademove = false;
+    bool mademove = false, correctmove = true;
 
     do
     {
         /*if (curre == 1)
         {*/
-            while (checkersGrid[piecexpos][pieceypos] != curre)
+            while (checkersGrid[piecexpos][pieceypos] != curre || correctmove == false)
             {
                 v.clear();
 
-                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
+                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" made an invalid input. re-enter input as '<piece>x y <move>x y'.");
 
                 input = screenBuffer.getBlockingInput();
 
@@ -124,10 +124,16 @@ void Checkers::playerturn(int curre)
                 {
                     v.push_back(s);
                 }
+
+                piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]);
+
+                correctmove = true;
             }
 
+            correctmove = false; //ensures above loop is run if xinp and/or yinp fails
+
             /*Kinged piece takes an enemy piece*/ 
-            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1] != curre && checkersGrid[piecexpos - 1][pieceypos - 1] != 0 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] != curre && checkersGrid[piecexpos + 1][pieceypos - 1] != 0 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0 || checkersGrid[piecexpos - 1][pieceypos + 1] != curre && checkersGrid[piecexpos - 1][pieceypos + 1] != 0 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] != curre && checkersGrid[piecexpos + 1][pieceypos + 1] != 0 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0))) // backward captures
+            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1] != curre && checkersGrid[piecexpos - 1][pieceypos - 1] != 0 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0 && piecexpos - 2 == xinp && pieceypos - 2 == yinp) || (checkersGrid[piecexpos + 1][pieceypos - 1] != curre && checkersGrid[piecexpos + 1][pieceypos - 1] != 0 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0 && piecexpos + 2 == xinp && pieceypos - 2 == yinp) || (checkersGrid[piecexpos - 1][pieceypos + 1] != curre && checkersGrid[piecexpos - 1][pieceypos + 1] != 0 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0 && piecexpos - 2 == xinp && pieceypos + 2 == yinp) || (checkersGrid[piecexpos + 1][pieceypos + 1] != curre && checkersGrid[piecexpos + 1][pieceypos + 1] != 0 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 && piecexpos + 2 == xinp && pieceypos + 2 == yinp))) // backward captures
             {
                 checkersGrid[xinp][yinp] = curre;
                 checkersGrid[piecexpos][pieceypos] = 0;
@@ -136,7 +142,7 @@ void Checkers::playerturn(int curre)
             } else
             {
                 //Kinged moves to empty space
-                if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1]  == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 0 || checkersGrid[piecexpos - 1][pieceypos + 1] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 0)))
+                if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1]  == 0 && piecexpos - 1 == xinp && pieceypos - 1 == yinp) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 0 && piecexpos + 1 == xinp && pieceypos - 1 == yinp) || (checkersGrid[piecexpos - 1][pieceypos + 1] == 0 && piecexpos - 1 == xinp && pieceypos + 1 == yinp) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 0 && piecexpos + 1 == xinp && pieceypos + 1 == yinp)))
                 {
                     checkersGrid[xinp][yinp] = curre;
                     checkersGrid[piecexpos][pieceypos] = 0;
@@ -154,7 +160,7 @@ void Checkers::playerturn(int curre)
                     }
                     
                     //Non-Kinged piece takes piece
-                    if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos - posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos - (posmod * 2)][pieceypos - (posmod * 2)] == 0) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos + posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos + (posmod * 2)][pieceypos - (posmod * 2)] == 0)))
+                    if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos - posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos - (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos - (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos + posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos + (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos + (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp)))
                     {
                         checkersGrid[xinp][yinp] = curre;
                         checkersGrid[piecexpos][pieceypos] = 0;
@@ -163,7 +169,7 @@ void Checkers::playerturn(int curre)
                     } else
                     {
                         //Non-Kinged moves to empty space
-                        if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] == 0) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] == 0)))
+                        if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] == 0 && piecexpos - posmod == xinp && pieceypos - posmod == yinp) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] == 0 && piecexpos - posmod == xinp && pieceypos - posmod == yinp)))
                         {
                             checkersGrid[xinp][yinp] = curre;
                             checkersGrid[piecexpos][pieceypos] = 0;
@@ -173,6 +179,9 @@ void Checkers::playerturn(int curre)
                 }
                     
             }
+
+            v.clear();
+
         /*}
         else
         {
@@ -239,7 +248,7 @@ void Checkers::swapturn(int playert)
 
 void Checkers::display()
 {
-    screenBuffer.writeToScreen(5, 0, L"1   2   3   4   5   6   7   8");
+    screenBuffer.writeToScreen(5, 0, L"0   1   2   3   4   5   6   7");
     screenBuffer.writeToScreen(3, 1, L"_____________________________");
 
     int offset = 2;
@@ -262,7 +271,7 @@ void Checkers::display()
             }
         }
         
-        screenBuffer.writeToScreen(2, offset++, row);
+        screenBuffer.writeToScreen(2, offset++, to_wstring(i) + row);
 
         screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
     }
