@@ -20,13 +20,13 @@ void Checkers::populateCheckersGrid()
     {
         for (int j = 0; i < 7; i++)
         {
-            if (i < 3 && j % 2 == 1)
+            if (i < 3 && j % 2 == 1) //player 2
             {
-                checkersGrid[i][j] = 1;
+                checkersGrid[i][j] = 2;
             }
             else if (i > 4 && j % 2 == 0)
             {
-                checkersGrid[i][j] = 2;
+                checkersGrid[i][j] = 1; //player 1
             }
             else
             {
@@ -103,49 +103,114 @@ void Checkers::playerturn(int curre)
         v.push_back(s);
     }
 
-    int piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]);
+    int piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]); // piece x position, piece y position, move to x coord, move to y coord
+    bool mademove = false;
 
-    if (curre == 1)
+    do
     {
-        while (checkersGrid[xinp][yinp] != curre)
-        {
-            v.clear();
-
-            screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
-
-            input = screenBuffer.getBlockingInput();
-
-            stringstream ss(input);
-
-            while (getline(ss, s, ' '))
+        /*if (curre == 1)
+        {*/
+            while (checkersGrid[piecexpos][pieceypos] != curre)
             {
-                v.push_back(s);
+                v.clear();
+
+                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
+
+                input = screenBuffer.getBlockingInput();
+
+                stringstream ss(input);
+
+                while (getline(ss, s, ' '))
+                {
+                    v.push_back(s);
+                }
             }
-        }
 
-        if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 || checkersGrid[piecexpos - 1][pieceypos - 1] == 2 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 2 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0))) // backward captures
+            /*Kinged piece takes an enemy piece*/ 
+            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1] != curre && checkersGrid[piecexpos - 1][pieceypos - 1] != 0 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] != curre && checkersGrid[piecexpos + 1][pieceypos - 1] != 0 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0 || checkersGrid[piecexpos - 1][pieceypos + 1] != curre && checkersGrid[piecexpos - 1][pieceypos + 1] != 0 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] != curre && checkersGrid[piecexpos + 1][pieceypos + 1] != 0 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0))) // backward captures
+            {
+                checkersGrid[xinp][yinp] = curre;
+                checkersGrid[piecexpos][pieceypos] = 0;
+                checkersGrid[(piecexpos + xinp) / 2][(pieceypos + yinp) / 2] = 0;
+                mademove = true;
+            } else
+            {
+                //Kinged moves to empty space
+                if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1]  == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 0 || checkersGrid[piecexpos - 1][pieceypos + 1] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 0)))
+                {
+                    checkersGrid[xinp][yinp] = curre;
+                    checkersGrid[piecexpos][pieceypos] = 0;
+                    mademove = true;
+                } else
+                {
+                    int posmod;
+
+                    if (curre == 1) //player 1
+                    {
+                        posmod = 1;
+                    } else //player 2
+                    {
+                        posmod = -1;
+                    }
+                    
+                    //Non-Kinged piece takes piece
+                    if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos - posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos - (posmod * 2)][pieceypos - (posmod * 2)] == 0) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos + posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos + (posmod * 2)][pieceypos - (posmod * 2)] == 0)))
+                    {
+                        checkersGrid[xinp][yinp] = curre;
+                        checkersGrid[piecexpos][pieceypos] = 0;
+                        checkersGrid[(piecexpos + xinp) / 2][(pieceypos + yinp) / 2] = 0;
+                        mademove = true;
+                    } else
+                    {
+                        //Non-Kinged moves to empty space
+                        if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] == 0) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] == 0)))
+                        {
+                            checkersGrid[xinp][yinp] = curre;
+                            checkersGrid[piecexpos][pieceypos] = 0;
+                            mademove = true;
+                        }
+                    }
+                }
+                    
+            }
+        /*}
+        else
         {
+            while (checkersGrid[piecexpos][pieceypos] != curre)
+            {
+                v.clear();
 
-        } else
-        {
+                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
 
-        }
+                input = screenBuffer.getBlockingInput();
 
-        if ()
-        {
+                stringstream ss(input);
 
-        }
-    }
-    else
-    {
-        if (/*(checkersGrid[piecex - 1][piecey - 1] == 2 && checkersGrid[piecex - 2][piecey - 2] == 0) || (checkersGrid[piecex + 1][piecey - 1] == 2 && checkersGrid[piecex + 2][piecey - 2] == 0)*/true) // backward captures
-        {
-
-        } else
-        {
-
-        }
-    }
+                while (getline(ss, s, ' '))
+                {
+                    v.push_back(s);
+                }
+            }
+            //Kinged piece 
+            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 || checkersGrid[piecexpos - 1][pieceypos - 1] == 2 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 2 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0))) // backward captures
+            {
+                checkersGrid[xinp][yinp] = curre;
+                checkersGrid[piecexpos][pieceypos] = 0;
+                mademove = true;
+            } else
+            {
+                //Non-Kinged piece
+                if (checkersGrid[xinp][yinp] / 3 == 0  && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0)))
+                {
+                    checkersGrid[xinp][yinp] = curre;
+                    checkersGrid[piecexpos][pieceypos] = 0;
+                    mademove = true;
+                }
+            }
+        }*/
+    } while (mademove == false);
+    
+    
 }
 
 void Checkers::move(int playerturn)
@@ -174,14 +239,32 @@ void Checkers::swapturn(int playert)
 
 void Checkers::display()
 {
-    cout << "\t 1 \t 2 \t 3 \t 4 \t 5 \t 6 \t 7 \t 8 \n";
+    screenBuffer.writeToScreen(5, 0, L"1   2   3   4   5   6   7   8");
+    screenBuffer.writeToScreen(3, 1, L"_____________________________");
+
+    int offset = 2;
 
     for (int i = 0; i < 7; i++)
     {
-        for (int j = 0; i < 7; i++)
+        std::wstring row = L" |";
+
+        for (int o = 0; o < 7; o++)
         {
-            cout << "\t " << (j + 1) << "shit";
+            wstring value = to_wstring(checkersGrid[i][o]);
+
+            if (value == L"0")
+            {
+                row += L"   |";
+            }
+            else
+            {
+                row += L" " + to_wstring(checkersGrid[i][o]) + L" |";
+            }
         }
+        
+        screenBuffer.writeToScreen(2, offset++, row);
+
+        screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
     }
 }
 
