@@ -142,7 +142,7 @@ struct Pile {
 	* @return The size of the pile.
 	*/
 	int size() {
-		return pile.size();
+		return static_cast<int>(pile.size());
 	}
 };
 
@@ -169,66 +169,66 @@ struct FoundationPile : Pile {
 * @brief A class that represents the solitaire game.
 */
 class Solitaire {
- private:
-	 ScreenBuffer screenBuffer; /*!< The screen buffer for displaying the game. */
+private:
+	ScreenBuffer screenBuffer; /*!< The screen buffer for displaying the game. */
 
-	 std::vector<Card> deck; /*!< The deck of cards. */
-	 std::stack<Card> stock; /*!< The stock pile of cards. */
-	 std::stack<Card> waste; /*!< The waste pile of cards. */
+	std::vector<Card> deck; /*!< The deck of cards. */
+	std::stack<Card> stock; /*!< The stock pile of cards. */
+	std::stack<Card> waste; /*!< The waste pile of cards. */
 
-	 Pile tableau[7]; /*!< The tableau piles of cards. */
-	 FoundationPile foundations[4] = {FoundationPile(HEARTS), FoundationPile(DIAMONDS), FoundationPile(CLUBS), FoundationPile(SPADES)}; /*!< The foundation piles of cards. */
+	Pile tableau[7]; /*!< The tableau piles of cards. */
+	FoundationPile foundations[4] = { FoundationPile(HEARTS), FoundationPile(DIAMONDS), FoundationPile(CLUBS), FoundationPile(SPADES) }; /*!< The foundation piles of cards. */
 
-	 /*!
-	 * @brief Function to create a stockpile of cards and randomly suffle them.
-	 */
-	 void createStock();
+	/*!
+	* @brief Function to create a stockpile of cards and randomly suffle them.
+	*/
+	void createStock();
 
-	 /*!
-	 * @brief Function to deal the cards from the stockpile to the tableau piles.
-	 * @details The first tableau pile will have 1 card, the second will have 2 cards, and so on.
-	 */
-	 void dealCards();
+	/*!
+	* @brief Function to deal the cards from the stockpile to the tableau piles.
+	* @details The first tableau pile will have 1 card, the second will have 2 cards, and so on.
+	*/
+	void dealCards();
 
-	 /*!
-	 * @brief Function to check if card can be added to a pile.
-	 * @param card The card to add to the pile.
-	 * @param pile The pile to add the card to.
-	 * @return true if the card can be added to the pile, false otherwise.
-	 */
-	 bool canCardAddToPile(Card& card, Pile& pile);
+	/*!
+	* @brief Function to check if card can be added to a pile.
+	* @param card The card to add to the pile.
+	* @param pile The pile to add the card to.
+	* @return true if the card can be added to the pile, false otherwise.
+	*/
+	bool canCardAddToPile(Card& card, Pile& pile);
 
-	 /*!
-	 * @brief Function to check if a card can be added to a foundation pile.
-	 * @param card The card to add to the pile.
-	 * @param foundationPile The foundation pile to add the card to.
-	 * @return true if the card can be added to the foundation pile, false otherwise.
-	 */
-	 bool canCardAddToFoundation(Card& card, FoundationPile& foundationPile);
+	/*!
+	* @brief Function to check if a card can be added to a foundation pile.
+	* @param card The card to add to the pile.
+	* @param foundationPile The foundation pile to add the card to.
+	* @return true if the card can be added to the foundation pile, false otherwise.
+	*/
+	bool canCardAddToFoundation(Card& card, FoundationPile& foundationPile);
 
 
-	 /*!
-	 * @brief Function to draw the game board.
-	 * @details The game board consists of the stock, waste, tableau, and foundations.
-	 */
-	 void drawBoard();
+	/*!
+	* @brief Function to draw the game board.
+	* @details The game board consists of the stock, waste, tableau, and foundations.
+	*/
+	void drawBoard();
 
-	 /*!
-	 * @brief Function to draw back of cards
-	 * @param x The x coordinate to draw the card
-	 * @param y The y coordinate to draw the card
-	 */
-	 void drawBackOfCards(int x, int y);
+	/*!
+	* @brief Function to draw back of cards
+	* @param x The x coordinate to draw the card
+	* @param y The y coordinate to draw the card
+	*/
+	void drawBackOfCards(int x, int y);
 
-	 /*!
-	 * @brief Function to draw a card
-	 * @param x The x coordinate to draw the card
-	 * @param y The y coordinate to draw the card
-	 * @param card The card to draw
-	 */
-	 void drawCard(int x, int y, Card card);
+	/*!
+	* @brief Function to draw a card
+	* @param x The x coordinate to draw the card
+	* @param y The y coordinate to draw the card
+	* @param card The card to draw
+	*/
+	void drawCard(int x, int y, Card card);
 
- public:
+public:
 	/*!
 	* @brief Default constructor for Solitaire.
 	*/
@@ -238,6 +238,6 @@ class Solitaire {
 	* @brief Function to run the game of solitaire.
 	*/
 	void run();
-}
+};
 
 #endif // SOLITAIRE_H

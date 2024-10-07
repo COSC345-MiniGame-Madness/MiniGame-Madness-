@@ -6,6 +6,7 @@ Solitaire::Solitaire() {
 	dealCards();
 }
 
+
 // Create the stock of cards
 void Solitaire::createStock() {
   
