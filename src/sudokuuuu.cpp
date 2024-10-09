@@ -52,7 +52,7 @@ void Sudokuuuu::enternum(int grid[9][9])
 
     do // Repeats until valid input is given
     {
-        screenBuffer.writeToScreen(0, 10, L"\nEnter number and coordinates in the format 'number row*column': ");
+        screenBuffer.writeToScreen(0, 19, L"\nEnter number and coordinates in the format 'number row*column': ");
 
         string input = screenBuffer.getBlockingInput(); // Capture input using screenBuffer
 
@@ -79,7 +79,7 @@ void Sudokuuuu::enternum(int grid[9][9])
 
             // Ensure coordinates are within bounds
             if (x < 1 || x > 9 || y < 1 || y > 9) {
-                screenBuffer.writeToScreen(0, 10, L"Coordinates out of bounds. Enter positions between 1 and 9.\n");
+                screenBuffer.writeToScreen(0, 19, L"Coordinates out of bounds. Enter positions between 1 and 9.\n");
                 continue;
             }
 
@@ -231,6 +231,7 @@ int Sudokuuuu::sudoku()
         display(input); // Display the current grid state
 
         enternum(input); // Allow user to input a number
+
     } while (memcmp(answer, input, sizeof(answer)) != 0); // Continue until puzzle is solved
 
     screenBuffer.writeToScreen(0, 10, L"You are the winner! Congratulations!");
