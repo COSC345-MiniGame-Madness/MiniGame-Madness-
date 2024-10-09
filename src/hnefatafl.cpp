@@ -393,9 +393,13 @@ int  Hnefatafl::run() {
 
         if (currentPlayer == player)
         { 
-            screenBuffer.writeToScreen(4, 24, L"Enter your move (e.g., A1 B2): ");
+            screenBuffer.writeToScreen(4, 24, L"Enter 'stop' to end game or your move (e.g., A1 B2): ");
             while (!validInput) {
                 input = screenBuffer.getBlockingInput();
+
+				if (input == "stop") {
+					return 0;
+				}
 
                 if (isValidInput(input)) {
                     size_t spacePos = input.find(' ');
@@ -414,7 +418,7 @@ int  Hnefatafl::run() {
 		    }
                 }
                 else {
-                    screenBuffer.writeToScreen(4, 24, L"Invalid input. Please enter your move in the format 'A1 B2':");
+                    screenBuffer.writeToScreen(4, 24, L"Invalid input. Please enter 'stop' or your move in the format 'A1 B2':");
                 }
             }
 

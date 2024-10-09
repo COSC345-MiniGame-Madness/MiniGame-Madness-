@@ -9,8 +9,11 @@
 
 #include "ScreenBuffer.h"
 #include <stack>
+#include <map>
 #include <algorithm>
 #include <random>
+#include <windows.h>
+
 
 /*!
 * @enum Suit
@@ -93,7 +96,7 @@ struct Pile {
 	* @brief Function to remove a card from the pile.
 	* @return The card that was removed from the pile.
 	*/
-    Card removeCard() {
+    Card removeTopCard() {
         Card topCard = pile.top();
         pile.pop();
         return topCard;
@@ -163,13 +166,35 @@ struct FoundationPile : Pile {
 	FoundationPile(Suit suit) : foundationSuit(suit) {}
 };
 
-
 /*!
 * @class Solitaire
 * @brief A class that represents the solitaire game.
 */
 class Solitaire {
 private:
+	const std::map<Value, std::wstring> valueToString = {
+	{ACE, L"A"},
+	{TWO, L"2"},
+	{THREE, L"3"},
+	{FOUR, L"4"},
+	{FIVE, L"5"},
+	{SIX, L"6"},
+	{SEVEN, L"7"},
+	{EIGHT, L"8"},
+	{NINE, L"9"},
+	{TEN, L"T"},
+	{JACK, L"J"},
+	{QUEEN, L"Q"},
+	{KING, L"K"}
+	};/*!< Map to convert card value to string. */
+	
+	const std::map<Suit, std::wstring> suitToString = {
+	{HEARTS, L"\u2665"},
+	{DIAMONDS, L"\u2666"},
+	{CLUBS, L"\u2663"},
+	{SPADES, L"\u2660"}
+	};/*!< Map to convert card suit to string. */
+	
 	ScreenBuffer screenBuffer; /*!< The screen buffer for displaying the game. */
 
 	std::vector<Card> deck; /*!< The deck of cards. */
@@ -228,6 +253,12 @@ private:
 	*/
 	void drawCard(int x, int y, Card card);
 
+	/*!
+	* @brief Function to check if the player has won the game.
+	* @return true if the player has won the game, false otherwise.
+	*/
+	bool isGameWon();
+
 public:
 	/*!
 	* @brief Default constructor for Solitaire.
@@ -236,8 +267,9 @@ public:
 
 	/*!
 	* @brief Function to run the game of solitaire.
+	* @return 0 to return to main menu or 1 to exit app.
 	*/
-	void run();
+	int run();
 };
 
 #endif // SOLITAIRE_H

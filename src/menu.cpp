@@ -29,8 +29,8 @@ int Menu::startGame(int input)
         break;
     case 3:
 		// Call function to start solitaire
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        //output = solitaireGame.run();
+        //screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
+        output = solitaireGame.run();
         break;
     case 4:
         // Call function to start Naughts and Crosses
@@ -79,6 +79,7 @@ int Menu::displayMenu()
     {
         // Set cursor visibility
         screenBuffer.setCursorVisibility(false);
+		screenBuffer.clearScreen();
 
         // Define menu options
         std::wstring text[] = {
