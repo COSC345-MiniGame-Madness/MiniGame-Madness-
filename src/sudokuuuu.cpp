@@ -214,6 +214,8 @@ int Sudokuuuu::givepos(int row, int col)
 
 int Sudokuuuu::sudoku()
 {
+    screenBuffer.setActive();
+
     srand(time(0)); //random number generator
 
     int grid[9][9] = { 0 }; //grid
