@@ -4,20 +4,21 @@
 #include <algorithm>
 #include <random>
 #include <string>
+#include <locale>
+#include <codecvt>
 #include "sudokuuuu.h"
 #include "screenBuffer.h"
 
 using namespace std;
 
-//int answer[9][9] = { 0 };
-
 Sudokuuuu::Sudokuuuu()
 {
-    generate(answer); //randomize grid
+    generate(answer); // Generate a randomized Sudoku grid
 }
 
-bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) // checks if number is in the row, column or inner square
+bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num)
 {
+    // Check if num is present in the row or column
     for (int x = 0; x < 9; x++)
     {
         if (grid[row][x] == num || grid[x][col] == num)
@@ -26,6 +27,7 @@ bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) //
         }
     }
 
+    // Check if num is present in the 3x3 subgrid
     int startRow = row - row % 3, startCol = col - col % 3;
 
     for (int i = 0; i < 3; i++)
@@ -45,26 +47,31 @@ bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num) //
 void Sudokuuuu::enternum(int grid[9][9])
 {
     int answer, x, y;
+
     bool numbercheck = false;
 
     do // Repeats until valid input is given
     {
-        string input;
-        screenBuffer.writeToScreen(0, 10, L"\nEnter number and coordinates in the format of 'number row*column': ");
-        getline(cin, input);
+        screenBuffer.writeToScreen(0, 10, L"\nEnter number and coordinates in the format 'number row*column': ");
+
+        string input = screenBuffer.getBlockingInput(); // Capture input using screenBuffer
+
+        wstring_convert<codecvt_utf8<wchar_t>> converter;
+
+        wstring wide_input = converter.from_bytes(input);
 
         try {
-            size_t pos = input.find(' ');
-            if (pos == string::npos) throw invalid_argument("Missing space");
+            size_t pos = wide_input.find(L' ');
+            if (pos == wstring::npos) throw invalid_argument("Missing space");
 
-            string num = input.substr(0, pos);
-            input.erase(0, pos + 1);
+            wstring num = wide_input.substr(0, pos);
+            wide_input.erase(0, pos + 1);
 
-            pos = input.find('*');
-            if (pos == string::npos) throw invalid_argument("Missing '*'");
+            pos = wide_input.find(L'*');
+            if (pos == wstring::npos) throw invalid_argument("Missing '*'");
 
-            string xpos = input.substr(0, pos);
-            string ypos = input.substr(pos + 1);
+            wstring xpos = wide_input.substr(0, pos);
+            wstring ypos = wide_input.substr(pos + 1);
 
             answer = stoi(num);
             x = stoi(xpos);
@@ -76,7 +83,7 @@ void Sudokuuuu::enternum(int grid[9][9])
                 continue;
             }
 
-            //adjust for array's zero positions
+            // Adjust for array's zero-based indexing
             x -= 1;
             y -= 1;
 
@@ -91,10 +98,11 @@ void Sudokuuuu::enternum(int grid[9][9])
         }
     } while (!numbercheck);
 
+    // Assign the input number to the grid
     grid[x][y] = answer;
 }
 
-bool Sudokuuuu::solver(int grid[9][9]) // attempts to fill every empty cell with a valid number
+bool Sudokuuuu::solver(int grid[9][9])
 {
     int row, col;
     bool empty = false;
@@ -106,24 +114,21 @@ bool Sudokuuuu::solver(int grid[9][9]) // attempts to fill every empty cell with
             if (grid[row][col] == 0)
             {
                 empty = true;
-
                 break;
             }
         }
         if (empty) break;
     }
 
-    if (!empty)
-    {
-        return true; // all cells filled
-    }
+    if (!empty) return true; // All cells filled
 
     int nums[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
     random_device rd;
+
     mt19937 g(rd());
 
-    std::shuffle(nums, nums + 9, g); //randomize order of numbers
+    shuffle(nums, nums + 9, g); // Shuffle numbers to randomize
 
     for (int i = 0; i < 9; i++)
     {
@@ -138,16 +143,16 @@ bool Sudokuuuu::solver(int grid[9][9]) // attempts to fill every empty cell with
                 return true;
             }
 
-            grid[row][col] = 0; //backtrack
+            grid[row][col] = 0; // Backtrack
         }
     }
 
-    return false; //trigger backtracking
+    return false; // Trigger backtracking
 }
 
 void Sudokuuuu::generate(int grid[9][9])
 {
-    solver(grid);
+    solver(grid); // Solve the Sudoku grid
 }
 
 void Sudokuuuu::remover(int grid[9][9], int count)
@@ -174,7 +179,7 @@ void Sudokuuuu::display(int grid[9][9])
 
     for (int row = 0; row < 9; row++)
     {
-        std::wstring rowDisplay = L" |";
+        wstring rowDisplay = L" |";
 
         for (int col = 0; col < 9; col++)
         {
@@ -194,7 +199,6 @@ void Sudokuuuu::display(int grid[9][9])
         screenBuffer.writeToScreen(3, offset++, L"-------------------------------------");
     }
 }
-
 
 void Sudokuuuu::giveanswer(int original[9][9])
 {
@@ -216,26 +220,20 @@ int Sudokuuuu::sudoku()
 {
     screenBuffer.setActive();
 
-    srand(time(0)); //random number generator
+    srand(static_cast<unsigned int>(time(0))); // Seed random number generator
 
-    int grid[9][9] = { 0 }; //grid
+    giveanswer(input); // Copy generated solution grid to answer grid
 
-    //generate(answer); //randomize grid
-
-    giveanswer(input); // and save it to a second grid
-
-    remover(input, 40); //remove numbers
+    remover(input, 40); // Remove 40 numbers to create the puzzle
 
     do
     {
-        display(input);
-        //cout << "\n\n";
-        //display(answer);
+        display(input); // Display the current grid state
 
-        enternum(input);
-    } while (memcmp(answer, input, sizeof(answer)) != 0);
+        enternum(input); // Allow user to input a number
+    } while (memcmp(answer, input, sizeof(answer)) != 0); // Continue until puzzle is solved
 
-    screenBuffer.writeToScreen(0, 10, L"You are winner. Now go outside");
+    screenBuffer.writeToScreen(0, 10, L"You are the winner! Congratulations!");
 
     return 0;
 }
