@@ -5,16 +5,16 @@
 
 using namespace std;
 
-int checkersGrid[8][8];
-int player1 = 1, player2 = 2, currentplaying = 1;
-bool winnerquestionmark = false;
+int checkersGrid[8][8]; //grid
+int player1 = 1, player2 = 2, currentplayer = 1; //players
+bool winnerquestionmark = false; //ends game loop if true
 
-Checkers::Checkers()
+Checkers::Checkers() // constructor
 {
     populateCheckersGrid();
 }
 
-void Checkers::populateCheckersGrid()
+void Checkers::populateCheckersGrid() // resets grid to starting positions
 {
     for (int i = 0; i < 7; i++)
     {
@@ -24,9 +24,9 @@ void Checkers::populateCheckersGrid()
             {
                 checkersGrid[i][j] = 2;
             }
-            else if (i > 4 && j % 2 == 0)
+            else if (i > 4 && j % 2 == 0) //player 1
             {
-                checkersGrid[i][j] = 1; //player 1
+                checkersGrid[i][j] = 1;
             }
             else
             {
@@ -36,7 +36,7 @@ void Checkers::populateCheckersGrid()
     }
 }
 
-void Checkers::forcejump(int playerturn) // piece should be like x 1, y 0 as 10
+void Checkers::forcejump(int playerturn) // force player to jump when another piece is within taking conditions
 {
     if (playerturn == 1)
     {
@@ -64,7 +64,7 @@ void Checkers::forcejump(int playerturn) // piece should be like x 1, y 0 as 10
     }
 }
 
-void Checkers::checkwin()
+void Checkers::checkwin() //checks if any of the players' pieces are still on the grid
 {
     bool one = false, two = false;
 
@@ -78,15 +78,18 @@ void Checkers::checkwin()
             }
             else if (checkersGrid[i][j] == 2)
             {
-
+                two = true;
             }
-
-            cout << "\t " << (j + 1) << "shit";
         }
+    }
+
+    if(one == false || two == false) // game over check
+    {
+        winnerquestionmark = true;
     }
 }
 
-void Checkers::playerturn(int curre)
+void Checkers::playerturn(int curre) // gets player input and moves the piece specified to the space given if its within checkers rules
 {
     screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" input move as '<piece>x y <move>x y'");
 
@@ -222,31 +225,32 @@ void Checkers::playerturn(int curre)
     
 }
 
-void Checkers::move(int playerturn)
+/*
+void Checkers::move(int playerturn) // moves piece to given location
 {
     if (playerturn == 1)
     {
 
     }
-}
+}*/
 
-int Checkers::randomstarter()
+int Checkers::randomstarter() // chooses a random starter
 {
     return 1 + (rand() % 2);
 }
 
-void Checkers::swapturn(int playert)
+void Checkers::swapturn(int playert) //swaps player turns
 {
     if (playert == 1)
     {
-        currentplaying = 2;
+        currentplayer = 2;
     }
     else {
-        currentplaying = 1;
+        currentplayer = 1;
     }
 }
 
-void Checkers::display()
+void Checkers::display() // write the grid to screen buffer
 {
     screenBuffer.writeToScreen(5, 0, L"0   1   2   3   4   5   6   7");
     screenBuffer.writeToScreen(3, 1, L"_____________________________");
@@ -277,20 +281,22 @@ void Checkers::display()
     }
 }
 
-void Checkers::checkersGam()
+void Checkers::checkersGam() // class is called from menu
 {
     populateCheckersGrid();
 
     while (winnerquestionmark == false)
     {
-        playerturn(currentplaying);
+        playerturn(currentplayer);
 
         checkwin();
 
-        //checkdraw();
-
-        swapturn(currentplaying);
+        swapturn(currentplayer);
     }
+
+    swapturn(currentplayer);
+
+    screenBuffer.writeToScreen(0, 14, L"Player " + to_wstring(currentplayer) + L" wins.");
 
     string see = "seel";
     cout << see;

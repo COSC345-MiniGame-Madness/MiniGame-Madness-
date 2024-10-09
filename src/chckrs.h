@@ -13,7 +13,7 @@ class Checkers
 
     public:
         int checkersGrid[8][8];
-        int player1, player2, currentplaying;
+        int player1, player2, currentplayer;
         bool winnerquestionmark;
 
         ScreenBuffer screenBuffer;
