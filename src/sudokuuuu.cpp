@@ -167,34 +167,34 @@ void Sudokuuuu::remover(int grid[9][9], int count)
 
 void Sudokuuuu::display(int grid[9][9])
 {
-    screenBuffer.writeToScreen(5, 0, L"1   2   3   4   5   6   7");
-    screenBuffer.writeToScreen(3, 1, L"_____________________________");
+    screenBuffer.writeToScreen(5, 0, L" 1   2   3   4   5   6   7   8   9 ");
+    screenBuffer.writeToScreen(3, 1, L"_____________________________________");
 
     int offset = 2;
 
     for (int row = 0; row < 9; row++)
     {
-        std::wstring row = L" |";
+        std::wstring rowDisplay = L" |";
 
         for (int col = 0; col < 9; col++)
         {
-            wstring value = to_wstring(grid[i][o]);
+            wstring value = to_wstring(grid[row][col]);
 
             if (value == L"0")
             {
-                row += L"   |";
+                rowDisplay += L"   |";
             }
             else
             {
-                row += L" " + to_wstring(grid[i][o]) + L" |";
+                rowDisplay += L" " + value + L" |";
             }
         }
-        
-        screenBuffer.writeToScreen(2, offset++, row);
 
-        screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
+        screenBuffer.writeToScreen(2, offset++, rowDisplay);
+        screenBuffer.writeToScreen(3, offset++, L"-------------------------------------");
     }
 }
+
 
 void Sudokuuuu::giveanswer(int original[9][9])
 {
@@ -216,7 +216,7 @@ int Sudokuuuu::sudoku()
 {
     srand(time(0)); //random number generator
 
-    //int grid[9][9] = { 0 }; //grid
+    int grid[9][9] = { 0 }; //grid
 
     //generate(answer); //randomize grid
 

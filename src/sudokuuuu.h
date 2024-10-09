@@ -53,6 +53,6 @@ class Sudokuuuu
         /// @brief 
         /// @return 
         int sudoku();
-}
+};
 
 #endif // SUDOKUUUU_H
