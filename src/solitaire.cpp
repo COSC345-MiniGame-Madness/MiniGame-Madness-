@@ -53,7 +53,7 @@ bool Solitaire::canCardAddToPile(Card& card, Pile& pile) {
 	if (pile.isEmpty() && card.value == Value::KING) {
 		return true;
 	}
-	else if (!pile.isEmpty() && pile.getTopCard().value == card.value - 1 && pile.getTopCard().suit != card.suit) {
+	else if (!pile.isEmpty() && (pile.getTopCard().value == card.value - 1) && (pile.getTopCard().colour != card.colour)) {
 		return true;
 	}
 	return false;
@@ -64,7 +64,7 @@ bool Solitaire::canCardAddToFoundation(Card& card, FoundationPile& pile) {
 	if (pile.isEmpty() && card.value == Value::ACE) {
 		return true;
 	}
-	else if (!pile.isEmpty() && pile.getTopCard().value == card.value + 1 && pile.getTopCard().suit == card.suit) {
+	else if (!pile.isEmpty() && (pile.getTopCard().value == card.value + 1) && (pile.getTopCard().suit == card.suit)) {
 		return true;
 	}
 	return false;
@@ -118,12 +118,13 @@ void Solitaire::drawCard(int x, int y, Card card) {
 
 // Draw the game board
 void Solitaire::drawBoard() {
+	screenBuffer.clearScreen();
+
 	// Draw the stock and waste piles
 	drawBackOfCards(0, 0);
 	screenBuffer.writeToScreen(6, 11, L"Stock");
 	drawCard(15, 0, stock.top());
 	screenBuffer.writeToScreen(20, 11, L"Waste");
-	screenBuffer.setScreenSize(580, 80);
 
 	// Draw the tableau piles
 	for (int i = 0; i < 7; ++i) {
@@ -147,6 +148,9 @@ void Solitaire::drawBoard() {
 	for (int i = 0; i < 4; ++i) {
 		// Draw the foundation pile label
 		screenBuffer.writeToScreen((14 - static_cast<int>(suits[i].length()))/2 + 45 + i * 15, 6, suits[i]);
+		if (!foundations[i].isEmpty()) {
+			drawCard(45 + i * 15, 0, foundations[i].getTopCard());
+		}
 	}
 }
 
@@ -167,9 +171,10 @@ int Solitaire::run() {
 	int fromPile = 0;
 	int toPile = 1;
 
-	screenBuffer.clearScreen();
+	screenBuffer.setScreenSize(580, 73);
 	drawBoard();
 	screenBuffer.setActive();
+	
 	
 	// Display instructions
 	screenBuffer.writeToScreen(0, 70, L"Type 'stop' to end game.");
@@ -200,6 +205,7 @@ int Solitaire::run() {
 				}
 			}
 		}
+
 		// Move a card to a tableau pile
 		if (input[0] == 'W' && (input[1] >= '0' && input[1] <= '6')) {
 			pile = input[1] - '0';
@@ -211,8 +217,8 @@ int Solitaire::run() {
 
 		// Move a card to a foundation pile
 		if (input[0] == 'W'  && (input[1] == 'H' || input[1] == 'D' || input[1] == 'C' || input[1] == 'S')) {
-			pile = input[1] - 'H';
-			if (waste.size() > 0 && canCardAddToFoundation(waste.top(), foundations[pile])) {
+			pile = input[1] - 'H' * -1;
+			if (!waste.empty() && canCardAddToFoundation(waste.top(), foundations[pile])) {
 				foundations[pile].addCard(waste.top());
 				waste.pop();
 			}
@@ -224,8 +230,8 @@ int Solitaire::run() {
 			toPile = input[1] - '0';
 			Card topCard = tableau[fromPile].getTopCard();
 
-			if (tableau[fromPile].size() > 0 && canCardAddToPile(topCard, foundations[toPile])) {
-				tableau[toPile].addCard(tableau[fromPile].getTopCard());
+			if (!tableau[fromPile].isEmpty() && canCardAddToPile(topCard, tableau[toPile])) {
+				tableau[toPile].addCard(topCard);
 				tableau[fromPile].removeTopCard();
 			}
 		}
@@ -233,10 +239,10 @@ int Solitaire::run() {
 		// Move a card from a tableau pile to a foundation pile
 		if ((input[0] >= '0' && input[0] <= '6') && (input[1] == 'H' || input[1] == 'D' || input[1] == 'C' || input[1] == 'S')) {
 			fromPile = input[0] - '0';
-			toPile = input[1] - 'H';
+			toPile = input[1] - 'H' * -1;
 			Card topCard = tableau[fromPile].getTopCard();
 
-			if (tableau[fromPile].size() > 0 && canCardAddToFoundation(topCard, foundations[toPile])) {
+			if (!tableau[fromPile].isEmpty() && canCardAddToFoundation(topCard, foundations[toPile])) {
 				foundations[toPile].addCard(tableau[fromPile].getTopCard());
 				tableau[fromPile].removeTopCard();
 			}
@@ -244,18 +250,17 @@ int Solitaire::run() {
 
 		// Move a card from a foundation pile to a tableau pile
 		if ((input[0] == 'H' || input[0] == 'D' || input[0] == 'C' || input[0] == 'S') && (input[1] >= '0' && input[1] <= '6')) {
-			fromPile = input[0] - 'H';
+			fromPile = input[0] - 'H' * -1;
 			toPile = input[1] - '0';
 			Card topCard = foundations[fromPile].getTopCard();
 
-			if (foundations[fromPile].size() > 0 && canCardAddToPile(topCard, tableau[toPile])) {
+			if (!foundations[fromPile].isEmpty() && canCardAddToPile(topCard, tableau[toPile])) {
 				tableau[toPile].addCard(foundations[fromPile].getTopCard());
 				foundations[fromPile].removeTopCard();
 			}
 		}
 
-		screenBuffer.clearScreen();
-		dealCards();
+		drawBoard();
 	}
 
 	return 0;
