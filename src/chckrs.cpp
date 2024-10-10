@@ -261,32 +261,31 @@ void Checkers::swapturn(int playert) //swaps player turns
 
 void Checkers::display() // write the grid to screen buffer
 {
-    screenBuffer.writeToScreen(5, 0, L"0   1   2   3   4   5   6   7");
-    screenBuffer.writeToScreen(3, 1, L"_____________________________");
+    screenBuffer.writeToScreen(6, 0, L"1   2   3   4   5   6   7   8");
+    screenBuffer.writeToScreen(4, 1, L"________________________________");
 
     int offset = 2;
 
-    for (int i = 0; i < 7; i++)
+    for (int row = 0; row < 9; row++)
     {
-        std::wstring row = L" |";
+        wstring rowDisplay = to_wstring(row + 1) + L" |";
 
-        for (int o = 0; o < 7; o++)
+        for (int col = 0; col < 9; col++)
         {
-            wstring value = to_wstring(checkersGrid[i][o]);
+            wstring value = to_wstring(grid[row][col]);
 
             if (value == L"0")
             {
-                row += L"   |";
+                rowDisplay += L"   |";
             }
             else
             {
-                row += L" " + to_wstring(checkersGrid[i][o]) + L" |";
+                rowDisplay += L" " + value + L" |";
             }
         }
-        
-        screenBuffer.writeToScreen(2, offset++, to_wstring(i) + row);
 
-        screenBuffer.writeToScreen(3, offset++, L"-----------------------------");
+        screenBuffer.writeToScreen(2, offset++, rowDisplay);
+        screenBuffer.writeToScreen(4, offset++, L"--------------------------------");
     }
 }
 
