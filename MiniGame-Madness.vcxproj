@@ -140,6 +140,7 @@
     <ClInclude Include="src\NaughtsxCrossess.h" />
     <ClInclude Include="src\RealScreenBuffer.h" />
     <ClInclude Include="src\ScreenBuffer.h" />
+    <ClInclude Include="src\sudokuuuu.h" />
     <ClInclude Include="src\wordScrambler.h" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\sudokuuuu.cpp" />
     <ClCompile Include="src\wordScrambler.cpp" />
   </ItemGroup>
   <ItemGroup>
