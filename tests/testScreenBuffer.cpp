@@ -15,6 +15,7 @@ namespace testScreenBuffer
 
         TEST_METHOD(Constructor)
         {
+
             ScreenBuffer buffer;
             Assert::AreNotEqual(INVALID_HANDLE_VALUE, buffer.getScreenHandle());
         }
@@ -49,14 +50,14 @@ namespace testScreenBuffer
         {
 			ScreenBuffer buffer;
             
-            buffer.setScreenSize(120, 20);
+            buffer.setScreenSize(120, 30);
 			Assert::AreEqual(120, buffer.getScreenWidth());
-		    Assert::AreEqual(20, buffer.getScreenHeight());
+		    Assert::AreEqual(30, buffer.getScreenHeight());
 
-			buffer.setScreenSize(140, 20); // Minimum screen buffer width is 120 in testing framework
-			buffer.setScreenSize(120, 20);
+			buffer.setScreenSize(140, 30); // Minimum screen buffer width is 120 in testing framework
+			buffer.setScreenSize(120, 30);
 			Assert::AreEqual(120, buffer.getScreenWidth());
-			Assert::AreEqual(20, buffer.getScreenHeight());
+			Assert::AreEqual(30, buffer.getScreenHeight());
         }
 
 		TEST_METHOD(SetScreenSizeLarger)

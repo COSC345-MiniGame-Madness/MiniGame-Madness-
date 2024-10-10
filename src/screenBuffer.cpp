@@ -53,8 +53,16 @@ ScreenBuffer::ScreenBuffer()
     // Check if the screen buffer was created successfully
     throwError(screenHandle != INVALID_HANDLE_VALUE, "Error creating screen buffer");
 
-    // set screen buffer size to window size
-    CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = getScreenBufferInfo();
+    // Get the handle for the standard output (console)
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    // set screen buffer size to console window size
+    CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo{};
+    if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ScreenBufferInfo)) {
+        // For testing
+        GetConsoleScreenBufferInfo(screenHandle, &ScreenBufferInfo);
+    }
+    
 
     // Enable virtual terminal processing
     DWORD consoleMode;
@@ -183,15 +191,19 @@ int ScreenBuffer::getScreenHeight() const
 void ScreenBuffer::setScreenSize(int width, int height)
 {
     // Get the current screen buffer info
-    CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = getScreenBufferInfo();
+    CONSOLE_SCREEN_BUFFER_INFO consoleScreenBufferInfo = getScreenBufferInfo();
+    
+    // Enforce minimum size
+    if (width < MIN_SCREEN_WIDTH) width = MIN_SCREEN_WIDTH;
+    if (height < MIN_SCREEN_HEIGHT) height = MIN_SCREEN_HEIGHT;
 
     // Calculate the new window size
     SMALL_RECT windowSize = { 0, 0, static_cast<SHORT>(width) - 1, static_cast<SHORT>(height) - 1 };
 
     // If the new size is smaller, adjust the window size first
-    if (width < ScreenBufferInfo.dwSize.X || height < ScreenBufferInfo.dwSize.Y)
+    if (width < consoleScreenBufferInfo.dwSize.X || height < consoleScreenBufferInfo.dwSize.Y)
     {
-        BOOL result1 = SetConsoleWindowInfo(screenHandle, TRUE, &windowSize);
+        BOOL result1 = writeToScreenBuffer(L"\033[8:" + std::to_wstring(height) + L":" + std::to_wstring(width) + L"t");
         throwError(result1, "Error setting console window size");
     }
 
@@ -201,9 +213,9 @@ void ScreenBuffer::setScreenSize(int width, int height)
     throwError(result2, "Error setting screen buffer size");
 
     // If the new size is larger, adjust the window size after setting the buffer size
-    if (width > ScreenBufferInfo.dwSize.X || height > ScreenBufferInfo.dwSize.Y)
+    if (width > consoleScreenBufferInfo.dwSize.X || height > consoleScreenBufferInfo.dwSize.Y)
     {
-        BOOL result3 = SetConsoleWindowInfo(screenHandle, TRUE, &windowSize);
+        BOOL result3 = writeToScreenBuffer(L"\033[8:" + std::to_wstring(height) + L":" + std::to_wstring(width) + L"t");
         throwError(result3, "Error setting console window size");
     }
 }

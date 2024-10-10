@@ -2,7 +2,7 @@
 
 // Initialize games
 Hnefatafl hnefataflGame;
-//Maze mazeGame(10,10);
+Solitaire solitaireGame;
 
 NaughtsxCrossess naughtsxCrossessGame;
 Hangman hangmanGame;
@@ -28,9 +28,9 @@ int Menu::startGame(int input)
         output = con4Game.connect4();
         break;
     case 3:
-        // Call function to start Maze
+		// Call function to start solitaire
         screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        //output = mazeGame.run();
+        //output = solitaireGame.run();
         break;
     case 4:
         // Call function to start Naughts and Crosses
@@ -63,10 +63,6 @@ int Menu::startGame(int input)
         minesweeper.minesweep();
         break;
     case 11:
-        // Call function to start Multiplayer Chess
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        break;
-    case 12:
         // Exit the program
 		output = EXIT_GAME;
         break;
@@ -84,13 +80,14 @@ int Menu::displayMenu()
     {
         // Set cursor visibility
         screenBuffer.setCursorVisibility(false);
+		screenBuffer.clearScreen();
 
         // Define menu options
         std::wstring text[] = {
             L"MINIGAME MADNESS",
             L"Hangman",
             L"Connect 4",
-            L"Maze",
+            L"Solitaire",
             L"Naughts and Crosses",
             L"Checkers",
             L"Hnefatafl",
@@ -98,7 +95,6 @@ int Menu::displayMenu()
             L"Word Scramble",
             L"Battleship",
             L"Minesweeper",
-            L"Multiplayer Chess",
             L"Exit",
         };
 
