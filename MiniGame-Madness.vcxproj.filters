@@ -36,7 +36,7 @@
     <ClInclude Include="src\NaughtsxCrossess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\battleShips.h">
+    <ClInclude Include="src\BattleshipGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\wordScrambler.h">
@@ -55,6 +55,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MockScreenBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minesweep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\chess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minsweep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
