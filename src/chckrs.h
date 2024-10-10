@@ -10,13 +10,14 @@ using namespace std;
 class Checkers
 {
     private:
-
-    public:
         int checkersGrid[8][8];
         int player1, player2, currentplayer;
         bool winnerquestionmark;
 
         ScreenBuffer screenBuffer;
+
+    public:
+        Checkers();
 
         void populateCheckersGrid();
 
@@ -26,7 +27,7 @@ class Checkers
 
         void playerturn(int curre);
 
-        void move(int playerturn);
+        //void move(int playerturn);
 
         int randomstarter();
 

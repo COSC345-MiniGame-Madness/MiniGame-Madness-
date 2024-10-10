@@ -1,7 +1,7 @@
 #include <iostream>
 #include "chckrs.h"
 #include "screenBuffer.h"
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -166,6 +166,15 @@ void Checkers::playerturn(int curre) // gets player input and moves the piece sp
                     if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos - posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos - (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos - (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos + posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos + (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos + (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp)))
                     {
                         checkersGrid[xinp][yinp] = curre;
+
+                        if (curre == 1 && xinp == 0)
+                        {
+                            checkersGrid[xinp][yinp] = checkersGrid[xinp][yinp] + 2;
+                        } else if (curre == 2 && xinp == 7)
+                        {
+                            checkersGrid[xinp][yinp] = checkersGrid[xinp][yinp] + 2;
+                        }
+
                         checkersGrid[piecexpos][pieceypos] = 0;
                         checkersGrid[(piecexpos + xinp) / 2][(pieceypos + yinp) / 2] = 0;
                         mademove = true;
