@@ -95,11 +95,11 @@ void Sudokuuuu::enternum(int grid[9][9])
                 numbercheck = true;
 
             }
-            catch (invalid_argument& e) 
+            catch (invalid_argument&) 
             {
                 screenBuffer.writeToScreen(0, 10, L"Invalid input format. Please try again.");
             }
-            catch (out_of_range& e) 
+            catch (out_of_range&) 
             {
                 screenBuffer.writeToScreen(0, 10, L"Input is out of range. Please enter smaller numbers.");
             }    
