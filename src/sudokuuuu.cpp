@@ -13,7 +13,7 @@ using namespace std;
 
 Sudokuuuu::Sudokuuuu()
 {
-    generate(answer); // Generate a randomized Sudoku grid
+    generate(input); // Generate a randomized Sudoku grid
 }
 
 bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num)
@@ -52,49 +52,61 @@ void Sudokuuuu::enternum(int grid[9][9])
 
     do // Repeats until valid input is given
     {
-        screenBuffer.writeToScreen(0, 19, L"\nEnter number and coordinates in the format 'number row*column': ");
+        screenBuffer.writeToScreen(0, 21, L"Enter number and coordinates in the format 'number row*column'");
+
+        screenBuffer.writeToScreen(0, 22, L"or type in '9999' to surrender: ");
 
         string input = screenBuffer.getBlockingInput(); // Capture input using screenBuffer
 
-        wstring_convert<codecvt_utf8<wchar_t>> converter;
+        if (stoi(input) == 9999)
+        {
+            surrender = true, numbercheck = true;
+            answer = 0, x = 0, y = 0;
+        } else
+        {
+            wstring_convert<codecvt_utf8<wchar_t>> converter;
 
-        wstring wide_input = converter.from_bytes(input);
+            wstring wide_input = converter.from_bytes(input);
 
-        try {
-            size_t pos = wide_input.find(L' ');
-            if (pos == wstring::npos) throw invalid_argument("Missing space");
+            try {
+                size_t pos = wide_input.find(L' ');
+                if (pos == wstring::npos) throw invalid_argument("Missing space");
 
-            wstring num = wide_input.substr(0, pos);
-            wide_input.erase(0, pos + 1);
+                wstring num = wide_input.substr(0, pos);
+                wide_input.erase(0, pos + 1);
 
-            pos = wide_input.find(L'*');
-            if (pos == wstring::npos) throw invalid_argument("Missing '*'");
+                pos = wide_input.find(L'*');
+                if (pos == wstring::npos) throw invalid_argument("Missing '*'");
 
-            wstring xpos = wide_input.substr(0, pos);
-            wstring ypos = wide_input.substr(pos + 1);
+                wstring xpos = wide_input.substr(0, pos);
+                wstring ypos = wide_input.substr(pos + 1);
 
-            answer = stoi(num);
-            x = stoi(xpos);
-            y = stoi(ypos);
+                answer = stoi(num);
+                x = stoi(xpos);
+                y = stoi(ypos);
 
-            // Ensure coordinates are within bounds
-            if (x < 1 || x > 9 || y < 1 || y > 9) {
-                screenBuffer.writeToScreen(0, 19, L"Coordinates out of bounds. Enter positions between 1 and 9.\n");
-                continue;
+                // Ensure coordinates are within bounds
+                if (x < 1 || x > 9 || y < 1 || y > 9) 
+                {
+                    screenBuffer.writeToScreen(0, 19, L"Coordinates out of bounds. Enter positions between 1 and 9.");
+                    continue;
+                }
+
+                // Adjust for array's zero-based indexing
+                x -= 1;
+                y -= 1;
+
+                numbercheck = true;
+
             }
-
-            // Adjust for array's zero-based indexing
-            x -= 1;
-            y -= 1;
-
-            numbercheck = true;
-
-        }
-        catch (invalid_argument& e) {
-            screenBuffer.writeToScreen(0, 10, L"Invalid input format. Please try again.\n");
-        }
-        catch (out_of_range& e) {
-            screenBuffer.writeToScreen(0, 10, L"Input is out of range. Please enter smaller numbers.\n");
+            catch (invalid_argument& e) 
+            {
+                screenBuffer.writeToScreen(0, 10, L"Invalid input format. Please try again.");
+            }
+            catch (out_of_range& e) 
+            {
+                screenBuffer.writeToScreen(0, 10, L"Input is out of range. Please enter smaller numbers.");
+            }    
         }
     } while (!numbercheck);
 
@@ -172,14 +184,14 @@ void Sudokuuuu::remover(int grid[9][9], int count)
 
 void Sudokuuuu::display(int grid[9][9])
 {
-    screenBuffer.writeToScreen(5, 0, L" 1   2   3   4   5   6   7   8   9 ");
-    screenBuffer.writeToScreen(3, 1, L"_____________________________________");
+    screenBuffer.writeToScreen(6, 0, L"1   2   3   4   5   6   7   8   9 ");
+    screenBuffer.writeToScreen(4, 1, L"_____________________________________");
 
     int offset = 2;
 
     for (int row = 0; row < 9; row++)
     {
-        wstring rowDisplay = L" |";
+        wstring rowDisplay = to_wstring(row + 1) + L" |";
 
         for (int col = 0; col < 9; col++)
         {
@@ -196,7 +208,7 @@ void Sudokuuuu::display(int grid[9][9])
         }
 
         screenBuffer.writeToScreen(2, offset++, rowDisplay);
-        screenBuffer.writeToScreen(3, offset++, L"-------------------------------------");
+        screenBuffer.writeToScreen(4, offset++, L"-------------------------------------");
     }
 }
 
@@ -222,19 +234,40 @@ int Sudokuuuu::sudoku()
 
     srand(static_cast<unsigned int>(time(0))); // Seed random number generator
 
+    generate(input);
+
     giveanswer(input); // Copy generated solution grid to answer grid
 
-    remover(input, 40); // Remove 40 numbers to create the puzzle
+    remover(input, 30); // Remove 40 numbers to create the puzzle
 
     do
     {
+        screenBuffer.clearScreen();
+
         display(input); // Display the current grid state
 
         enternum(input); // Allow user to input a number
 
+        if (surrender == true)
+        {
+            break;
+        }
+
     } while (memcmp(answer, input, sizeof(answer)) != 0); // Continue until puzzle is solved
 
-    screenBuffer.writeToScreen(0, 10, L"You are the winner! Congratulations!");
+    screenBuffer.clearScreen();
+
+    display(input);
+
+    if (surrender == true)
+    {
+        screenBuffer.writeToScreen(0, 21, L"Surrendered. Press enter to return to menu.");
+    } else 
+    {
+        screenBuffer.writeToScreen(0, 21, L"You are the winner! Congratulations!. Press enter to return to menu.", ScreenBuffer::GREEN, ScreenBuffer::BACKGROUND_NORMAL);
+    }
+
+    screenBuffer.getBlockingInput();
 
     return 0;
 }

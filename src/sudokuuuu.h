@@ -21,6 +21,8 @@ class Sudokuuuu
         int answer[9][9] = {0};
         int input[9][9] = {0};
 
+        bool surrender = false;
+
         ScreenBuffer screenBuffer;
 
     public:
