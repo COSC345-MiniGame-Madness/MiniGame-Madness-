@@ -46,6 +46,12 @@ void Solitaire::dealCards() {
 	for (int i = 0; i < 7; ++i) {
 		tableau[i].flipTopCard();
 	}
+
+	// Flip top card in stock onto waste
+	Card topCard = stock.top();
+	topCard.faceUp = true;
+	stock.pop();
+	waste.push(topCard);
 }
 
 // Check if a card can be added to a pile
@@ -53,7 +59,7 @@ bool Solitaire::canCardAddToPile(Card& card, Pile& pile) {
 	if (pile.isEmpty() && card.value == Value::KING) {
 		return true;
 	}
-	else if (!pile.isEmpty() && (pile.getTopCard().value == card.value - 1) && (pile.getTopCard().colour != card.colour)) {
+	else if (!pile.isEmpty() && (pile.getTopCard().value - 1 == card.value && (pile.getTopCard().colour != card.colour)) ) {
 		return true;
 	}
 	return false;
@@ -64,7 +70,7 @@ bool Solitaire::canCardAddToFoundation(Card& card, FoundationPile& pile) {
 	if (pile.isEmpty() && card.value == Value::ACE) {
 		return true;
 	}
-	else if (!pile.isEmpty() && (pile.getTopCard().value == card.value + 1) && (pile.getTopCard().suit == card.suit)) {
+	else if (!pile.isEmpty() && (pile.getTopCard().value + 1 == card.value) && (pile.getTopCard().suit == card.suit)) {
 		return true;
 	}
 	return false;
@@ -112,7 +118,7 @@ void Solitaire::drawCard(int x, int y, Card card) {
 	// Draw the value of the card
 	screenBuffer.writeToScreen(x + 2, y + 1, valueToString.at(card.value), colour, ScreenBuffer::BACKGROUND_NORMAL);
 	screenBuffer.writeToScreen(x + 11, y + 9, valueToString.at(card.value), colour, ScreenBuffer::BACKGROUND_NORMAL);
-	screenBuffer.writeToScreen(x + 10, y + 1, suitToString.at(card.suit), colour, ScreenBuffer::BACKGROUND_NORMAL);
+	screenBuffer.writeToScreen(x + 11, y + 1, suitToString.at(card.suit), colour, ScreenBuffer::BACKGROUND_NORMAL);
 	screenBuffer.writeToScreen(x + 2, y + 9, suitToString.at(card.suit), colour, ScreenBuffer::BACKGROUND_NORMAL);
 }
 
@@ -123,7 +129,7 @@ void Solitaire::drawBoard() {
 	// Draw the stock and waste piles
 	drawBackOfCards(0, 0);
 	screenBuffer.writeToScreen(6, 11, L"Stock");
-	drawCard(15, 0, stock.top());
+	drawCard(15, 0, waste.top());
 	screenBuffer.writeToScreen(20, 11, L"Waste");
 
 	// Draw the tableau piles
@@ -152,6 +158,83 @@ void Solitaire::drawBoard() {
 			drawCard(45 + i * 15, 0, foundations[i].getTopCard());
 		}
 	}
+}
+
+// Flip new card from stock to waste
+void Solitaire::flipNewCard() {
+	if (!stock.empty()) {
+		Card topCard = stock.top();
+		topCard.faceUp = true;
+		stock.pop();
+		waste.push(topCard);
+		drawCard(15, 0, waste.top());
+	}
+	else {
+		while (!waste.empty()) {
+			stock.push(waste.top());
+			waste.pop();
+		}
+
+		Card topCard = stock.top();
+		topCard.faceUp = true;
+		stock.pop();
+		waste.push(topCard);
+		drawCard(15, 0, waste.top());
+	}
+}
+
+// Draw foundation pile
+void Solitaire::drawFoundationPile(int i) {
+	FoundationPile pile = foundations[i];
+	if (!pile.isEmpty()) {
+		drawCard(45 + i * 15, 0, pile.getTopCard());
+	}
+}
+
+// Draw tableau pile
+void Solitaire::drawTableauPile(int i) {
+	Pile pile = tableau[i];
+	Pile tempPile; 
+	int size = pile.size();
+	int x = i * 15;
+	int y = 15;
+
+	for (int j = 0; j < size; ++j) {
+		tempPile.addCard(pile.getTopCard());
+		Card topCard = pile.getTopCard();
+		pile.removeTopCard();
+
+		if (pile.isTopCardFaceUp())
+		{
+			drawCard(x, y, topCard);
+		}
+		else {
+			drawBackOfCards(x, y);
+		}
+		y += 4;
+	}
+
+	drawCard(x, y, pile.getTopCard());
+}
+
+// Check if input has vaild tableau pile
+bool Solitaire::isValidTableauInput(char input) {
+
+
+	if (input >= '0' && input <= '6') {
+		return true;
+	}
+
+	return false;
+}
+
+// Check if input has valid foundation pile
+bool Solitaire::isValidFoundationInput(char input) {
+	if (input == 'H' || input == 'D' || input == 'C' || input == 'S') {
+		return true;
+	}
+
+	return false;
 }
 
 // Check if the game is won
@@ -192,40 +275,35 @@ int Solitaire::run() {
 		}
 
 		if (input == "W") {
-			// Check if stock has cards left
-			if (!stock.empty()) {
-				waste.push(stock.top());
-				stock.pop();
-			}
-			// If stock is empty, move cards back from waste
-			else if (stock.empty()) {
-				while (!waste.empty()) {
-					stock.push(waste.top());
-					waste.pop();
-				}
-			}
+			flipNewCard();
+		}
+
+		// Check if input is two characters long
+		if (input.length() != 2) {
+			continue;
 		}
 
 		// Move a card to a tableau pile
-		if (input[0] == 'W' && (input[1] >= '0' && input[1] <= '6')) {
+		if (input[0] == 'W' && isValidTableauInput(input[1])) {
 			pile = input[1] - '0';
-			if (waste.size() > 0 && canCardAddToPile(waste.top(), tableau[pile])) {
+			if (!waste.empty() && canCardAddToPile(waste.top(), tableau[pile])) {
 				tableau[pile].addCard(waste.top());
 				waste.pop();
 			}
 		}
 
 		// Move a card to a foundation pile
-		if (input[0] == 'W'  && (input[1] == 'H' || input[1] == 'D' || input[1] == 'C' || input[1] == 'S')) {
+		if (input[0] == 'W'  && isValidFoundationInput(input[1])) {
 			pile = input[1] - 'H' * -1;
 			if (!waste.empty() && canCardAddToFoundation(waste.top(), foundations[pile])) {
 				foundations[pile].addCard(waste.top());
 				waste.pop();
+				drawFoundationPile(pile);
 			}
 		}
 
 		// Move a card from a tableau pile to another tableau pile
-		if ((input[0] >= '0' && input[0] <= '6') && (input[1] >= '0' && input[1] <= '6')) {
+		if (isValidTableauInput(input[0]) && isValidTableauInput(input[1])) {
 			fromPile = input[0] - '0';
 			toPile = input[1] - '0';
 			Card topCard = tableau[fromPile].getTopCard();
@@ -233,11 +311,13 @@ int Solitaire::run() {
 			if (!tableau[fromPile].isEmpty() && canCardAddToPile(topCard, tableau[toPile])) {
 				tableau[toPile].addCard(topCard);
 				tableau[fromPile].removeTopCard();
+				drawTableauPile(fromPile);
+				drawTableauPile(toPile);
 			}
 		}
 
 		// Move a card from a tableau pile to a foundation pile
-		if ((input[0] >= '0' && input[0] <= '6') && (input[1] == 'H' || input[1] == 'D' || input[1] == 'C' || input[1] == 'S')) {
+		if (isValidTableauInput(input[0]) && isValidFoundationInput(input[1])) {
 			fromPile = input[0] - '0';
 			toPile = input[1] - 'H' * -1;
 			Card topCard = tableau[fromPile].getTopCard();
@@ -245,11 +325,13 @@ int Solitaire::run() {
 			if (!tableau[fromPile].isEmpty() && canCardAddToFoundation(topCard, foundations[toPile])) {
 				foundations[toPile].addCard(tableau[fromPile].getTopCard());
 				tableau[fromPile].removeTopCard();
+				drawFoundationPile(toPile);
+				drawTableauPile(fromPile);
 			}
 		}
 
 		// Move a card from a foundation pile to a tableau pile
-		if ((input[0] == 'H' || input[0] == 'D' || input[0] == 'C' || input[0] == 'S') && (input[1] >= '0' && input[1] <= '6')) {
+		if (isValidFoundationInput(input[0]) && isValidTableauInput(input[1])) {
 			fromPile = input[0] - 'H' * -1;
 			toPile = input[1] - '0';
 			Card topCard = foundations[fromPile].getTopCard();
@@ -257,10 +339,10 @@ int Solitaire::run() {
 			if (!foundations[fromPile].isEmpty() && canCardAddToPile(topCard, tableau[toPile])) {
 				tableau[toPile].addCard(foundations[fromPile].getTopCard());
 				foundations[fromPile].removeTopCard();
+				drawFoundationPile(fromPile);
+				drawTableauPile(toPile);
 			}
 		}
-
-		drawBoard();
 	}
 
 	return 0;

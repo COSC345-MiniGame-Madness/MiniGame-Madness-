@@ -14,6 +14,11 @@
 #include <random>
 #include <windows.h>
 
+// Forward declaration of the test class
+namespace SolitaireTests {
+	class SolitaireTests;
+}
+
 
 /*!
 * @enum Suit
@@ -74,6 +79,7 @@ struct Card {
    */
 	Card(Value value, Suit suit, Colour colour, bool faceUp)
 		: value(value), suit(suit), colour(colour), faceUp(faceUp) {}
+
 };
 
 /*!
@@ -115,6 +121,14 @@ struct Pile {
 	*/
 	Colour getTopCardColour() {
 		return pile.top().colour;
+	}
+
+	/*!
+	* @brief Function to check if the top card of the pile is face up.
+	* @return true if the top card of the pile is face up, false otherwise.
+	*/
+	bool isTopCardFaceUp() {
+		return pile.top().faceUp;
 	}
 
 	/*!
@@ -172,6 +186,9 @@ struct FoundationPile : Pile {
 */
 class Solitaire {
 private:
+	// Declare the test class as a friend
+	friend class SolitaireTests::SolitaireTests;
+
 	const std::map<Value, std::wstring> valueToString = {
 	{ACE, L"A"},
 	{TWO, L"2"},
@@ -258,6 +275,37 @@ private:
 	* @return true if the player has won the game, false otherwise.
 	*/
 	bool isGameWon();
+
+	/*!
+	* @brief Function to check player input is vaild for tableau index.
+	* @param input The input to check.
+	* @return true if the input is valid, false otherwise.
+	*/
+	bool isValidTableauInput(char input);
+
+	/*!
+	* @brief Function to check player input is vaild for foundation index.
+	* @param input The input to check.
+	* @return true if the input is valid, false otherwise.
+	*/
+	bool isValidFoundationInput(char input);
+
+	/*!
+	* @brief Function to flip new card into waste pile and redraw.
+	*/
+	void flipNewCard();
+
+	/*!
+	* @brief Function to draw foundation pile.
+	* @param i The index of the foundation pile.
+	*/
+	void drawFoundationPile(int i);
+
+	/*!
+	* @brief Function to draw tableau pile.
+	* @param i The index of the tableau pile.
+	*/
+	void drawTableauPile(int i);
 
 public:
 	/*!

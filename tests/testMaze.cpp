@@ -36,6 +36,7 @@ namespace MazeTests
             // Verify that all 4 directions are picked
             Assert::IsTrue(pickedDirections.size() == 4);
         } 
+
         TEST_METHOD(TestGetOppositeDirection)
         {
             Maze maze(10, 10);;
