@@ -18,8 +18,7 @@ Sudokuuuu::Sudokuuuu()
 
 bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num)
 {
-    // Check if num is present in the row or column
-    for (int x = 0; x < 9; x++)
+    for (int x = 0; x < 9; x++) // Check if num is present in the row or column
     {
         if (grid[row][x] == num || grid[x][col] == num)
         {
@@ -27,8 +26,7 @@ bool Sudokuuuu::uniquequestionmark(int grid[9][9], int row, int col, int num)
         }
     }
 
-    // Check if num is present in the 3x3 subgrid
-    int startRow = row - row % 3, startCol = col - col % 3;
+    int startRow = row - row % 3, startCol = col - col % 3; // Check if num is present in the 3x3 subgrid
 
     for (int i = 0; i < 3; i++)
     {
@@ -84,16 +82,14 @@ void Sudokuuuu::enternum(int grid[9][9])
                 answer = stoi(num);
                 x = stoi(xpos);
                 y = stoi(ypos);
-
-                // Ensure coordinates are within bounds
-                if (x < 1 || x > 9 || y < 1 || y > 9) 
+                
+                if (x < 1 || x > 9 || y < 1 || y > 9) // Ensure coordinates are within bounds
                 {
                     screenBuffer.writeToScreen(0, 19, L"Coordinates out of bounds. Enter positions between 1 and 9.");
                     continue;
                 }
 
-                // Adjust for array's zero-based indexing
-                x -= 1;
+                x -= 1; // Adjust for array's zero-based indexing
                 y -= 1;
 
                 numbercheck = true;
@@ -110,8 +106,7 @@ void Sudokuuuu::enternum(int grid[9][9])
         }
     } while (!numbercheck);
 
-    // Assign the input number to the grid
-    grid[x][y] = answer;
+    grid[x][y] = answer; // Assign the input number to the grid
 }
 
 bool Sudokuuuu::solver(int grid[9][9])

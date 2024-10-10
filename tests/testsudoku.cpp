@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../src/sudoku.h"
-#include "../games/SUDOKUUUUUU/"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -10,15 +9,30 @@ namespace sudokuTest
 	TEST_CLASS(sudokuTest)
 	{
 	public:
-		
-		int grid[9][9] = { 0 };
 
 		TEST_METHOD(GridMaker)
 		{
 			sudokuuuu game;
 
-			Assert::
+			Assert::AreEqual(0, remover(grid, 500));
 		}
 
+		TEST_METHOD(Unique)
+		{
+			sudokuuuu game;
+
+			generate(input);
+			
+			Assert::uniquequestionmark(input, 0, 0, 0);
+		}
+
+		TEST_METHOD(givenAnswer)
+		{
+			sudokuuuu game;
+
+			generate(input);
+
+			Assert::AreEqual(0, remover(grid, 100));
+		}
 	};
 }
