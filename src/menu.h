@@ -17,6 +17,7 @@
 #include "NaughtsxCrossess.h"
 #include "chckrs.h"
 #include <conio.h>
+#include "minesweep.h"
 
 /*!
 * @class Menu

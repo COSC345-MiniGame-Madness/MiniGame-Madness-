@@ -8,7 +8,7 @@ NaughtsxCrossess naughtsxCrossessGame;
 Hangman hangmanGame;
 WordScrambler wordScramblerGame;
 BattleshipGame battleshipGame;
-
+Minsweep minesweeper;
 Con4 con4Game;
 
 
@@ -59,7 +59,8 @@ int Menu::startGame(int input)
         break;
     case 10:
         // Call function to start Minesweeper
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
+        //screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
+        minesweeper.minesweep();
         break;
     case 11:
         // Exit the program
