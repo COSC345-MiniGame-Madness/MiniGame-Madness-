@@ -23,11 +23,11 @@ namespace sudokuTest
 
 			game.setnum(3, 7, 4);
 
-			Assert::AreEqual(9, game.getnum(0, 0);
+			Assert::AreEqual(9, game.getnum(0, 0));
 
-			Assert::AreEqual(5, game.getnum(8, 2);
+			Assert::AreEqual(5, game.getnum(8, 2));
 
-			Assert::AreEqual(3, game.getnum(7, 3);
+			Assert::AreEqual(3, game.getnum(7, 3));
 		}
 		
 		TEST_METHOD(uniquecheck) //checks if the number is unique horizontally, vertically and in 3x3 inner cube
