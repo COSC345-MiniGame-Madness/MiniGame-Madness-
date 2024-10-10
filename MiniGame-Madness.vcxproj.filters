@@ -30,6 +30,9 @@
     <ClInclude Include="src\maze.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+	<ClInclude Include="src\minsweep.h">
+      <Filter>Header Files</Filter>
+	</ClInclude>
     <ClInclude Include="src\hnefatafl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,6 +71,9 @@
     <ClCompile Include="src\maze.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+	<ClCompile Include="src\minsweep.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="src\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

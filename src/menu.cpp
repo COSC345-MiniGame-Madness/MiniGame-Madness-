@@ -11,6 +11,7 @@ BattleshipGame battleshipGame;
 
 Con4 con4Game;
 
+Minsweep minesweeper;
 
 // Input function to start each game
 int Menu::startGame(int input)
@@ -59,7 +60,8 @@ int Menu::startGame(int input)
         break;
     case 10:
         // Call function to start Minesweeper
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
+        //screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
+        minesweeper.minesweep();
         break;
     case 11:
         // Call function to start Multiplayer Chess

@@ -135,6 +135,7 @@
     <ClInclude Include="src\hnefatafl.h" />
     <ClInclude Include="src\IScreenBuffer.h" />
     <ClInclude Include="src\maze.h" />
+	<ClInclude Include="src\minsweep.h" />
     <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\MockScreenBuffer.h" />
     <ClInclude Include="src\NaughtsxCrossess.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="src\hangman.cpp" />
     <ClCompile Include="src\hnefatafl.cpp" />
     <ClCompile Include="src\maze.cpp" />
+	<ClInclude Include="src\minsweep.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\MiniGame-Madness.cpp" />
     <ClCompile Include="src\NaughtsxCrossess.cpp" />

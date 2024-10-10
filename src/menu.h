@@ -15,6 +15,7 @@
 #include "wordScrambler.h"
 #include "BattleshipGame.h"
 #include "NaughtsxCrossess.h"
+#include "minsweep.h"
 #include "chckrs.h"
 #include <conio.h>
 
