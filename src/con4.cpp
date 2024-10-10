@@ -20,19 +20,19 @@ void Con4::endgame(wstring letter) // end game
 {
     if (letter == win)
     {
-        screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" wins.");
+        screenBuffer.writeToScreen(5, 16, L"Player " + to_wstring(currentplayer) + L" wins.", ScreenBuffer::GREEN, ScreenBuffer::BACKGROUND_NORMAL);
 
         screenBuffer.getBlockingInput();
     }
     else if (letter == surrender)
     {
-        screenBuffer.writeToScreen(0, 16, L"player " + to_wstring(currentplayer) + L" surrenders.");
+        screenBuffer.writeToScreen(5, 16, L"Player " + to_wstring(currentplayer) + L" surrenders.", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
 
         screenBuffer.getBlockingInput();
     }
     else if (letter == draw)
     {
-        screenBuffer.writeToScreen(0, 16, L"Draw.");
+        screenBuffer.writeToScreen(5, 16, L"Draw.", ScreenBuffer::YELLOW, ScreenBuffer::BACKGROUND_NORMAL);
 
         screenBuffer.getBlockingInput();
     }
@@ -46,13 +46,18 @@ void Con4::playerturn(int player)
 
     do
     {
-        screenBuffer.writeToScreen(0, 14, L"player " + to_wstring(player) + L"'s turn. Select a column to drop a coin.  ");
+        screenBuffer.writeToScreen(5, 14, L"player " + to_wstring(player) + L"'s turn. Select a column to drop a coin.", ScreenBuffer::CYAN, ScreenBuffer::BACKGROUND_NORMAL);
+        screenBuffer.writeToScreen(5, 15, L"or input 99 to surrender: ", ScreenBuffer::CYAN, ScreenBuffer::BACKGROUND_NORMAL);
 
         diff = screenBuffer.getBlockingInput();
 
         if (grid[0][stoi(diff) - 1] != 0)
         {
-            screenBuffer.writeToScreen(0, 18, L"Column is full. choose another.");
+            if (stoi(diff) == 99)
+            {
+                break;
+            }
+            screenBuffer.writeToScreen(5, 18, L"Column is full. choose another.", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
         }
     } while (grid[0][stoi(diff) - 1] != 0);
 
@@ -60,7 +65,7 @@ void Con4::playerturn(int player)
 
     while(repeat)
     {
-        if (stoi(diff) == 9)
+        if (stoi(diff) == 99)
         {
             repeat = false;
 
@@ -74,10 +79,12 @@ void Con4::playerturn(int player)
         }
         else
         {
-            screenBuffer.writeToScreen(0, 16, L"Invalid input. Choose between 1 and 7.");
+            screenBuffer.writeToScreen(5, 16, L"Invalid input. Choose between 1 and 7.", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
 
             screenBuffer.getBlockingInput();
         }
+
+        //screenBuffer.clearScreen();
     }
 }
 
