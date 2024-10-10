@@ -154,9 +154,6 @@ void Solitaire::drawBoard() {
 	for (int i = 0; i < 4; ++i) {
 		// Draw the foundation pile label
 		screenBuffer.writeToScreen((14 - static_cast<int>(suits[i].length()))/2 + 45 + i * 15, 6, suits[i]);
-		if (!foundations[i].isEmpty()) {
-			drawCard(45 + i * 15, 0, foundations[i].getTopCard());
-		}
 	}
 }
 

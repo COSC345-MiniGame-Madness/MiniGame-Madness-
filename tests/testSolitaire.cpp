@@ -50,6 +50,7 @@ namespace SolitaireTests
         TEST_METHOD(TestIsGameWon)
         {
             Solitaire game;
+			Assert::IsFalse(game.isGameWon(), L"Game should not be won when no foundation piles have 13 cards.");
             for (int i = 0; i < 4; ++i) {
                 for (int j = Value::ACE; j <= Value::KING; ++j) {
                     if (i < 2) {
@@ -89,6 +90,8 @@ namespace SolitaireTests
         {
             Solitaire game;
             Card card(Value::ACE, Suit::HEARTS, Colour::RED, true);
+			Card card2(Value::ACE, Suit::SPADES, Colour::BLACK, true);
+
             game.drawCard(0, 0, card);
             // Assuming you have a method to read the screen buffer content
             std::wstring expected[] = { L"+------------+",
@@ -134,6 +137,21 @@ namespace SolitaireTests
             Assert::IsFalse(game.isValidFoundationInput('E'), L"Input 'E' should be invalid.");
             Assert::IsFalse(game.isValidFoundationInput('1'), L"Input '1' should be invalid.");
             Assert::IsFalse(game.isValidFoundationInput('a'), L"Input 'a' should be invalid.");
+        }
+
+        TEST_METHOD(TestFlipNewCard)
+        {
+            Solitaire game;
+
+            // Initial state: waste should be empty
+            Assert::AreEqual(static_cast<int>(game.waste.size()), 1, L"Waste should be size 1.");
+
+            // Flip a new card from stock to waste
+            game.flipNewCard();
+
+            // Check if the waste has one card and it is face up
+            Assert::AreEqual(static_cast<int>(game.waste.size()), 2, L"Waste should be size 2.");
+            Assert::IsTrue(game.waste.top().faceUp, L"The top card in waste should be face up.");
         }
     };
 }
