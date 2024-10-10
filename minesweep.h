@@ -20,7 +20,6 @@ private:
     int grid[25][25]; // assuming maximum size is 25x25
     bool revealed[25][25]; // tracks revealed tiles
     int widened;
-    bool finquestionmark = false, winquestionmark = false, kaboomquestionmark = false;
 
     ScreenBuffer screenBuffer;
 
@@ -31,7 +30,7 @@ public:
 
     /// @brief randomly places mines in grid
     /// @param diff sets difficulty
-    void populategrid(const std::string& diff);
+    void populategrid(string diff);
 
     /// @brief checks if win conditions are met
     void checkwin();

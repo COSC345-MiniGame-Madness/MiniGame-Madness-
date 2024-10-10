@@ -12,7 +12,7 @@ void Minsweep::endgame()
     winquestionmark = true;
 }
 
-void Minsweep::populategrid(string diff)
+void Minsweep::populategrid(const std::string& diff)
 {
     int max, min, mines;
 
@@ -70,6 +70,7 @@ void Minsweep::populategrid(string diff)
         }
     }
 }
+
 
 void Minsweep::floodFill(int x, int y)
 {

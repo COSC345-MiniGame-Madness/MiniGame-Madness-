@@ -23,17 +23,18 @@ private:
 
     ScreenBuffer screenBuffer;
 
-    /*!
-     * @brief Ends game when called with specific values.
-     * @param s for surrender, w for win, d for draw.
-     */
-    void endgame(wstring letter);
 
 public:
     /*!
      * @brief Constructor for the Connect4 class.
      */
     Con4();
+
+    /*!
+    * @brief Ends game when called with specific values.
+    * @param s for surrender, w for win, d for draw.
+    */
+    void endgame(const wstring& letter);
 
     /*!
      * @brief Populates the game grid with initial values.
