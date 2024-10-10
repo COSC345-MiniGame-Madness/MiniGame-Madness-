@@ -1,13 +1,12 @@
 #include <iostream>
 #include "chckrs.h"
 #include "screenBuffer.h"
-//#include <bits/stdc++.h>
 
 using namespace std;
 
-int checkersGrid[8][8]; //grid
-int player1 = 1, player2 = 2, currentplayer = 1; //players
-bool winnerquestionmark = false; //ends game loop if true
+int checkersGrid[8][8]; // grid
+int player1 = 1, player2 = 2, currentplayer = 1; // players
+bool winnerquestionmark = false; // ends game loop if true
 
 Checkers::Checkers() // constructor
 {
@@ -16,50 +15,69 @@ Checkers::Checkers() // constructor
 
 void Checkers::populateCheckersGrid() // resets grid to starting positions
 {
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 8; i++) 
     {
-        for (int j = 0; i < 7; i++)
+        for (int j = 0; j < 8; j++) 
         {
-            if (i < 3 && j % 2 == 1) //player 2
+            if (i < 3 && j % 2 == 1) 
             {
-                checkersGrid[i][j] = 2;
+                checkersGrid[i][j] = 2; // Player 2's pieces
             }
-            else if (i > 4 && j % 2 == 0) //player 1
+            else if (i > 4 && j % 2 == 0) 
             {
-                checkersGrid[i][j] = 1;
+                checkersGrid[i][j] = 1; // Player 1's pieces
             }
-            else
+            else 
             {
-                checkersGrid[i][j] = 0;
+                checkersGrid[i][j] = 0; // Empty squares
             }
         }
     }
+
 }
 
-void Checkers::forcejump(int playerturn) // force player to jump when another piece is within taking conditions
+void Checkers::forcejump(int playerturn) 
 {
-    if (playerturn == 1)
+    int opponent = (playerturn == 1) ? 2 : 1;
+
+    for (int i = 0; i < 8; i++) 
     {
-        if (/*piece is king && (checkersGrid[piecex - 1][piecey + 1] == 2 && checkersGrid[piecex - 2][piecey + 2] == 0) || (checkersGrid[piecex + 1][piecey + 1] == 2 && checkersGrid[piecex + 2][piecey + 2] == 0)*/true) // backward captures
+        for (int j = 0; j < 8; j++) 
         {
+            if (checkersGrid[i][j] == playerturn) // Check diagonal jumps for normal pieces
+            {
+                if (playerturn == 1) // Player 1 moves upwards
+                { 
+                    if (i > 1 && j > 1 && checkersGrid[i - 1][j - 1] == opponent && checkersGrid[i - 2][j - 2] == 0) // A forced jump is possible
+                    {
+                        screenBuffer.writeToScreen(0, 15, L"Player " + to_wstring(playerturn) + L" must jump at (" + to_wstring(i) + L", " + to_wstring(j) + L")");
+                        
+                        return;
+                    }
 
-        }
+                    if (i > 1 && j < 6 && checkersGrid[i - 1][j + 1] == opponent && checkersGrid[i - 2][j + 2] == 0) 
+                    {
+                        screenBuffer.writeToScreen(0, 15, L"Player " + to_wstring(playerturn) + L" must jump at (" + to_wstring(i) + L", " + to_wstring(j) + L")");
+                        
+                        return;
+                    }
+                } else // Player 2 moves downwards
+                { 
+                    if (i < 6 && j > 1 && checkersGrid[i + 1][j - 1] == opponent && checkersGrid[i + 2][j - 2] == 0) 
+                    {
+                        screenBuffer.writeToScreen(0, 15, L"Player " + to_wstring(playerturn) + L" must jump at (" + to_wstring(i) + L", " + to_wstring(j) + L")");
+                        
+                        return;
+                    }
 
-        if (/*(checkersGrid[piecex - 1][piecey - 1] == 2 && checkersGrid[piecex - 2][piecey - 2] == 0) || (checkersGrid[piecex + 1][piecey - 1] == 2 && checkersGrid[piecex + 2][piecey - 2] == 0)*/true) // forward captures
-        {
+                    if (i < 6 && j < 6 && checkersGrid[i + 1][j + 1] == opponent && checkersGrid[i + 2][j + 2] == 0) 
+                    {
+                        screenBuffer.writeToScreen(0, 15, L"Player " + to_wstring(playerturn) + L" must jump at (" + to_wstring(i) + L", " + to_wstring(j) + L")");
 
-        }
-    }
-    else
-    {
-        if (/*(checkersGrid[piecex - 1][piecey - 1] == 2 && checkersGrid[piecex - 2][piecey - 2] == 0) || (checkersGrid[piecex + 1][piecey - 1] == 2 && checkersGrid[piecex + 2][piecey - 2] == 0)*/true) // backward captures
-        {
-
-        }
-
-        if (/*piece is king && (checkersGrid[piecex - 1][piecey + 1] == 2 && checkersGrid[piecex - 2][piecey + 2] == 0) || (checkersGrid[piecex + 1][piecey + 1] == 2 && checkersGrid[piecex + 2][piecey + 2] == 0)*/true) // forward captures
-        {
-
+                        return;
+                    }
+                }
+            }
         }
     }
 }
@@ -89,159 +107,142 @@ void Checkers::checkwin() //checks if any of the players' pieces are still on th
     }
 }
 
-void Checkers::playerturn(int curre) // gets player input and moves the piece specified to the space given if its within checkers rules
+void Checkers::playerturn(int curre) 
 {
-    screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" input move as '<piece>x y <move>x y'");
+    screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L", input move as '<piece>x y <move>x y':");
 
     string input = screenBuffer.getBlockingInput();
 
-    string s;
-
     stringstream ss(input);
 
-    vector<string> v;
+    vector<int> moveCoords;
 
-    while (getline(ss, s, ' '))
+    for (string s; ss >> s;) 
     {
-        v.push_back(s);
+        moveCoords.push_back(stoi(s));
     }
 
-    int piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]); // piece x position, piece y position, move to x coord, move to y coord
-    bool mademove = false, correctmove = true;
-
-    do
+    int piecexpos = moveCoords[0], pieceypos = moveCoords[1];
+    int xinp = moveCoords[2], yinp = moveCoords[3];
+    
+    while (checkersGrid[piecexpos][pieceypos] % 3 != curre) // Validate that the selected piece belongs to the current player
     {
-        /*if (curre == 1)
-        {*/
-            while (checkersGrid[piecexpos][pieceypos] != curre || correctmove == false)
-            {
-                v.clear();
+        screenBuffer.writeToScreen(0, 11, L"Invalid selection. Re-enter move.");
 
-                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" made an invalid input. re-enter input as '<piece>x y <move>x y'.");
+        input = screenBuffer.getBlockingInput();
 
-                input = screenBuffer.getBlockingInput();
+        moveCoords.clear();
 
-                stringstream ss(input);
+        stringstream newSS(input);
 
-                while (getline(ss, s, ' '))
-                {
-                    v.push_back(s);
-                }
-
-                piecexpos = stoi(v[0]), pieceypos = stoi(v[1]), xinp = stoi(v[2]), yinp = stoi(v[3]);
-
-                correctmove = true;
-            }
-
-            correctmove = false; //ensures above loop is run if xinp and/or yinp fails
-
-            /*Kinged piece takes an enemy piece*/ 
-            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1] != curre && checkersGrid[piecexpos - 1][pieceypos - 1] != 0 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0 && piecexpos - 2 == xinp && pieceypos - 2 == yinp) || (checkersGrid[piecexpos + 1][pieceypos - 1] != curre && checkersGrid[piecexpos + 1][pieceypos - 1] != 0 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0 && piecexpos + 2 == xinp && pieceypos - 2 == yinp) || (checkersGrid[piecexpos - 1][pieceypos + 1] != curre && checkersGrid[piecexpos - 1][pieceypos + 1] != 0 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0 && piecexpos - 2 == xinp && pieceypos + 2 == yinp) || (checkersGrid[piecexpos + 1][pieceypos + 1] != curre && checkersGrid[piecexpos + 1][pieceypos + 1] != 0 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 && piecexpos + 2 == xinp && pieceypos + 2 == yinp))) // backward captures
-            {
-                checkersGrid[xinp][yinp] = curre;
-                checkersGrid[piecexpos][pieceypos] = 0;
-                checkersGrid[(piecexpos + xinp) / 2][(pieceypos + yinp) / 2] = 0;
-                mademove = true;
-            } else
-            {
-                //Kinged moves to empty space
-                if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos - 1]  == 0 && piecexpos - 1 == xinp && pieceypos - 1 == yinp) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 0 && piecexpos + 1 == xinp && pieceypos - 1 == yinp) || (checkersGrid[piecexpos - 1][pieceypos + 1] == 0 && piecexpos - 1 == xinp && pieceypos + 1 == yinp) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 0 && piecexpos + 1 == xinp && pieceypos + 1 == yinp)))
-                {
-                    checkersGrid[xinp][yinp] = curre;
-                    checkersGrid[piecexpos][pieceypos] = 0;
-                    mademove = true;
-                } else
-                {
-                    int posmod;
-
-                    if (curre == 1) //player 1
-                    {
-                        posmod = 1;
-                    } else //player 2
-                    {
-                        posmod = -1;
-                    }
-                    
-                    //Non-Kinged piece takes piece
-                    if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos - posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos - (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos - (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] != curre && checkersGrid[piecexpos + posmod][pieceypos - posmod] != 0 && checkersGrid[piecexpos + (posmod * 2)][pieceypos - (posmod * 2)] == 0 && piecexpos + (posmod * 2) == xinp && pieceypos - (posmod * 2) == yinp)))
-                    {
-                        checkersGrid[xinp][yinp] = curre;
-
-                        if (curre == 1 && xinp == 0)
-                        {
-                            checkersGrid[xinp][yinp] = checkersGrid[xinp][yinp] + 2;
-                        } else if (curre == 2 && xinp == 7)
-                        {
-                            checkersGrid[xinp][yinp] = checkersGrid[xinp][yinp] + 2;
-                        }
-
-                        checkersGrid[piecexpos][pieceypos] = 0;
-                        checkersGrid[(piecexpos + xinp) / 2][(pieceypos + yinp) / 2] = 0;
-                        mademove = true;
-                    } else
-                    {
-                        //Non-Kinged moves to empty space
-                        if (checkersGrid[xinp][yinp] / 3 == 0 && ((checkersGrid[piecexpos - posmod][pieceypos - posmod] == 0 && piecexpos - posmod == xinp && pieceypos - posmod == yinp) || (checkersGrid[piecexpos + posmod][pieceypos - posmod] == 0 && piecexpos - posmod == xinp && pieceypos - posmod == yinp)))
-                        {
-                            checkersGrid[xinp][yinp] = curre;
-                            checkersGrid[piecexpos][pieceypos] = 0;
-                            mademove = true;
-                        }
-                    }
-                }
-                    
-            }
-
-            v.clear();
-
-        /*}
-        else
+        for (string s; newSS >> s;) 
         {
-            while (checkersGrid[piecexpos][pieceypos] != curre)
+            moveCoords.push_back(stoi(s));
+        }
+        piecexpos = moveCoords[0];
+        pieceypos = moveCoords[1];
+
+        xinp = moveCoords[2];
+        yinp = moveCoords[3];
+    }
+
+    bool mademove = false;
+    int pieceValue = checkersGrid[piecexpos][pieceypos];
+
+    bool isKing = (pieceValue >= 3); // Check if the piece is a king (pieceValue >= 3)
+
+    if (!isKing) // Normal piece logic
+    { 
+        if (curre == 1 && xinp == piecexpos - 1 && abs(yinp - pieceypos) == 1 && checkersGrid[xinp][yinp] == 0) // Regular move for player 1
+        {
+            checkersGrid[xinp][yinp] = curre;
+            checkersGrid[piecexpos][pieceypos] = 0;
+
+            mademove = true;
+
+            if (xinp == 0) // Promote to king if player 1 reaches the top row
             {
-                v.clear();
-
-                screenBuffer.writeToScreen(0, 11, L"Player " + to_wstring(curre) + L" doesn't own the piece at x: " + to_wstring(xinp) + L" y: " + to_wstring(yinp) + L". re-enter co-ordinates.");
-
-                input = screenBuffer.getBlockingInput();
-
-                stringstream ss(input);
-
-                while (getline(ss, s, ' '))
-                {
-                    v.push_back(s);
-                }
+                checkersGrid[xinp][yinp] += 2;
             }
-            //Kinged piece 
-            if (checkersGrid[xinp][yinp] / 3 == 1 && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0 || checkersGrid[piecexpos - 1][pieceypos - 1] == 2 && checkersGrid[piecexpos - 2][pieceypos - 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos - 1] == 2 && checkersGrid[piecexpos + 2][pieceypos - 2] == 0))) // backward captures
+        }
+        else if (curre == 2 && xinp == piecexpos + 1 && abs(yinp - pieceypos) == 1 && checkersGrid[xinp][yinp] == 0) // Regular move for player 2
+        {
+            checkersGrid[xinp][yinp] = curre;
+            checkersGrid[piecexpos][pieceypos] = 0;
+
+            mademove = true;
+
+            if (xinp == 7) // Promote to king if player 2 reaches the bottom row
             {
-                checkersGrid[xinp][yinp] = curre;
+                checkersGrid[xinp][yinp] += 2;
+            }
+        }
+    }
+
+    if (!mademove) // Handle jump (capture)
+    {
+        int jumpx = (piecexpos + xinp) / 2;
+        int jumpy = (pieceypos + yinp) / 2;
+
+        if (curre == 1 && xinp == piecexpos - 2 && abs(yinp - pieceypos) == 2 && checkersGrid[jumpx][jumpy] % 3 == 2 && checkersGrid[xinp][yinp] == 0) // Player 1 jumps over player 2's piece
+        {
+            checkersGrid[xinp][yinp] = curre;
+            checkersGrid[piecexpos][pieceypos] = 0;
+            checkersGrid[jumpx][jumpy] = 0;
+
+            mademove = true;
+
+            if (xinp == 0) // Promote to king if player 1 reaches the top row
+            {
+                checkersGrid[xinp][yinp] += 2;
+            }
+        }
+        else if (curre == 2 && xinp == piecexpos + 2 && abs(yinp - pieceypos) == 2 && checkersGrid[jumpx][jumpy] % 3 == 1 && checkersGrid[xinp][yinp] == 0) // Player 2 jumps over player 1's piece
+        {
+            checkersGrid[xinp][yinp] = curre;
+            checkersGrid[piecexpos][pieceypos] = 0;
+            checkersGrid[jumpx][jumpy] = 0;
+
+            mademove = true;
+            
+            if (xinp == 7) // Promote to king if player 2 reaches the bottom row
+            {
+                checkersGrid[xinp][yinp] += 2;
+            }
+        }
+    }
+    
+    if (isKing && !mademove) // Handle king piece logic (both forward and backward moves)
+    {
+        if (abs(xinp - piecexpos) == 1 && abs(yinp - pieceypos) == 1 && checkersGrid[xinp][yinp] == 0) // King moves
+        {
+            checkersGrid[xinp][yinp] = pieceValue;
+            checkersGrid[piecexpos][pieceypos] = 0;
+
+            mademove = true;
+        }
+        else if (abs(xinp - piecexpos) == 2 && abs(yinp - pieceypos) == 2) // King captures
+        {
+            int jumpx = (piecexpos + xinp) / 2;
+            int jumpy = (pieceypos + yinp) / 2;
+
+            if (checkersGrid[jumpx][jumpy] % 3 != curre && checkersGrid[jumpx][jumpy] != 0 && checkersGrid[xinp][yinp] == 0) 
+            {
+                checkersGrid[xinp][yinp] = pieceValue;
                 checkersGrid[piecexpos][pieceypos] = 0;
+                checkersGrid[jumpx][jumpy] = 0;
+
                 mademove = true;
-            } else
-            {
-                //Non-Kinged piece
-                if (checkersGrid[xinp][yinp] / 3 == 0  && ((checkersGrid[piecexpos - 1][pieceypos + 1] == 2 && checkersGrid[piecexpos - 2][pieceypos + 2] == 0) || (checkersGrid[piecexpos + 1][pieceypos + 1] == 2 && checkersGrid[piecexpos + 2][pieceypos + 2] == 0)))
-                {
-                    checkersGrid[xinp][yinp] = curre;
-                    checkersGrid[piecexpos][pieceypos] = 0;
-                    mademove = true;
-                }
             }
-        }*/
-    } while (mademove == false);
-    
-    
+        }
+    }
+
+    if (!mademove) 
+    {
+        screenBuffer.writeToScreen(0, 11, L"Invalid move. Try again.");
+    }
 }
 
-/*
-void Checkers::move(int playerturn) // moves piece to given location
-{
-    if (playerturn == 1)
-    {
-
-    }
-}*/
 
 int Checkers::randomstarter() // chooses a random starter
 {
@@ -253,32 +254,32 @@ void Checkers::swapturn(int playert) //swaps player turns
     if (playert == 1)
     {
         currentplayer = 2;
-    }
-    else {
+    } else 
+    {
         currentplayer = 1;
     }
 }
 
-void Checkers::display() // write the grid to screen buffer
+void Checkers::display() 
 {
     screenBuffer.writeToScreen(6, 0, L"1   2   3   4   5   6   7   8");
     screenBuffer.writeToScreen(4, 1, L"________________________________");
 
     int offset = 2;
 
-    for (int row = 0; row < 9; row++)
+    for (int row = 0; row < 8; row++) 
     {
         wstring rowDisplay = to_wstring(row + 1) + L" |";
 
-        for (int col = 0; col < 9; col++)
+        for (int col = 0; col < 8; col++) 
         {
-            wstring value = to_wstring(grid[row][col]);
+            wstring value = to_wstring(checkersGrid[row][col]);
 
-            if (value == L"0")
+            if (value == L"0") 
             {
                 rowDisplay += L"   |";
             }
-            else
+            else 
             {
                 rowDisplay += L" " + value + L" |";
             }
@@ -289,13 +290,20 @@ void Checkers::display() // write the grid to screen buffer
     }
 }
 
+
 void Checkers::checkersGam() // class is called from menu
 {
+    screenBuffer.setActive();
+
     populateCheckersGrid();
 
-    while (winnerquestionmark == false)
+    while (!winnerquestionmark)
     {
         playerturn(currentplayer);
+
+        screenBuffer.clear();
+
+        display();
 
         checkwin();
 
@@ -305,7 +313,4 @@ void Checkers::checkersGam() // class is called from menu
     swapturn(currentplayer);
 
     screenBuffer.writeToScreen(0, 14, L"Player " + to_wstring(currentplayer) + L" wins.");
-
-    string see = "seel";
-    cout << see;
 }

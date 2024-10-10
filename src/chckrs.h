@@ -11,8 +11,8 @@ class Checkers
 {
     private:
         int checkersGrid[8][8];
-        int player1, player2, currentplayer;
-        bool winnerquestionmark;
+        int player1 = 1, player2 = 2, currentplayer = 1;
+        bool winnerquestionmark = false;
 
         ScreenBuffer screenBuffer;
 
@@ -26,8 +26,6 @@ class Checkers
         void checkwin();
 
         void playerturn(int curre);
-
-        //void move(int playerturn);
 
         int randomstarter();
 
