@@ -28,41 +28,27 @@ int Menu::startGame(int input)
         output = con4Game.connect4();
         break;
     case 3:
-		// Call function to start solitaire
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        //output = solitaireGame.run();
-        break;
-    case 4:
         // Call function to start Naughts and Crosses
 		naughtsxCrossessGame.run();
         break;
-    case 5:
-        // Call function to start Checkers
-		//checkers();
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-        break;
-    case 6:
+    case 4:
         // Call the class to start Hnefatafl
         output = hnefataflGame.run();
         break;
-    case 7:
-        // Call function to start Sudoku
-        screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED,ScreenBuffer::BACKGROUND_NORMAL);
-        break;
-    case 8:
+    case 5:
         // Call function to start Word Scramble
         wordScramblerGame.run();
         break;
-    case 9:
+    case 6:
         // Call function to start Battleship
         battleshipGame.run();
         break;
-    case 10:
+    case 7:
         // Call function to start Minesweeper
         //screenBuffer.writeToScreen(75, startY + row, L"Coming Soon", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
         minesweeper.minesweep();
         break;
-    case 11:
+    case 8:
         // Exit the program
 		output = EXIT_GAME;
         break;
@@ -87,11 +73,8 @@ int Menu::displayMenu()
             L"MINIGAME MADNESS",
             L"Hangman",
             L"Connect 4",
-            L"Solitaire",
             L"Naughts and Crosses",
-            L"Checkers",
             L"Hnefatafl",
-            L"Sudoku",
             L"Word Scramble",
             L"Battleship",
             L"Minesweeper",
@@ -140,7 +123,7 @@ int Menu::displayMenu()
                     }
                     break;
                 case 80:  // Down arrow
-                    if (row < 12) {
+                    if (row < 9) {
                         // Deselect current option
                         padding = (width / 2) - (static_cast<int>(text[row].size()) / 2);
                         screenBuffer.writeToScreen(padding, startY + row, text[row], ScreenBuffer::FOREGROUND_NORMAL, ScreenBuffer::BACKGROUND_NORMAL);
