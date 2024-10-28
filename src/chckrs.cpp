@@ -28,7 +28,7 @@ void populateCheckersGrid()
     }
 }
 
-void forcejump(int playerturn, string piece) // piece should be like x 1, y 0 as 10
+void forcejump(int playerturn, const string& piece) // piece passed by const reference
 {
     if (playerturn == 1)
     {
@@ -83,7 +83,7 @@ void playerturn(int curre)
 
 }
 
-void move(int playerturn, string piece)
+void move(int playerturn, const string& piece) // piece passed by const reference
 {
     if (playerturn == 1)
     {

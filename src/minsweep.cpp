@@ -1,34 +1,34 @@
 #include <iostream>
 #include <sstream>
-#include "minsweep.h"
-#include "screenBuffer.h"
+#include "minesweep.h"
 
 int widened = 8;
-bool finquestionmark = false, winquestionmark = false, kaboomquestionmark = false;
 
 int grid[25][25]; // grid and revealed arrays
 bool revealed[25][25];
 
-void Minsweep::endgame() 
+void Minsweep::endgame()
 {
     winquestionmark = true;
 }
 
-void Minsweep::populategrid(string diff) 
+void Minsweep::populategrid(const std::string& diff)
 {
     int max, min, mines;
 
-    if (diff == "e") 
+    if (diff == "e")
     {
         widened = 8;
         max = 10;
         min = 8;
-    } else if (diff == "m") 
+    }
+    else if (diff == "m")
     {
         widened = 14;
         max = 10;
         min = 8;
-    } else if (diff == "h") 
+    }
+    else if (diff == "h")
     {
         widened = 25;
         max = 10;
@@ -36,32 +36,31 @@ void Minsweep::populategrid(string diff)
     }
 
     mines = min + (rand() % max);
-    
+
     for (int i = 0; i < widened; i++) // initialize grid and revealed arrays
     {
-        for (int j = 0; j < widened; j++) 
+        for (int j = 0; j < widened; j++)
         {
             grid[i][j] = 0;
             revealed[i][j] = false;
         }
     }
-    
     while (mines > 0) // place mines
     {
         int xrand = rand() % widened, yrand = rand() % widened;
 
-        if (grid[xrand][yrand] != 9) 
+        if (grid[xrand][yrand] != 9)
         {
             grid[xrand][yrand] = 9; // Mine
             mines--;
-            
+
             for (int dx = -1; dx <= 1; dx++) // update neighbors
             {
-                for (int dy = -1; dy <= 1; dy++) 
+                for (int dy = -1; dy <= 1; dy++)
                 {
                     int nx = xrand + dx, ny = yrand + dy;
 
-                    if (nx >= 0 && nx < widened && ny >= 0 && ny < widened && grid[nx][ny] != 9) 
+                    if (nx >= 0 && nx < widened && ny >= 0 && ny < widened && grid[nx][ny] != 9)
                     {
                         grid[nx][ny]++;
                     }
@@ -71,44 +70,44 @@ void Minsweep::populategrid(string diff)
     }
 }
 
-void Minsweep::floodFill(int x, int y) 
+
+void Minsweep::floodFill(int x, int y)
 {
     if (x < 0 || x >= widened || y < 0 || y >= widened) // check if coords within grid
     {
         return;
     }
-    
     if (revealed[x][y] || grid[x][y] == 9) // If cell already revealed or is a mine, stop
     {
         return;
     }
-    
+
     revealed[x][y] = true; // reveal current cell
-    
+
     if (grid[x][y] != 0) // if current cell not empty, don't continue
     {
         return;
     }
-    
+
     for (int dx = -1; dx <= 1; dx++) // recursively reveal adjacent cells (8 directions)
     {
-        for (int dy = -1; dy <= 1; dy++) 
+        for (int dy = -1; dy <= 1; dy++)
         {
             if (dx != 0 || dy != 0) // exclude center cell
-            { 
+            {
                 floodFill(x + dx, y + dy);
             }
         }
     }
 }
 
-void Minsweep::checkwin() 
+void Minsweep::checkwin()
 {
-    for (int i = 0; i < widened; i++) 
+    for (int i = 0; i < widened; i++)
     {
-        for (int j = 0; j < widened; j++) 
+        for (int j = 0; j < widened; j++)
         {
-            if (grid[i][j] != 9 && !revealed[i][j]) 
+            if (grid[i][j] != 9 && !revealed[i][j])
             {
                 return; // still tiles to reveal
             }
@@ -117,12 +116,12 @@ void Minsweep::checkwin()
     winquestionmark = true; // all non-mine tiles are revealed
 }
 
-void Minsweep::kaboom() 
+void Minsweep::kaboom()
 {
     kaboomquestionmark = true;
 }
 
-void Minsweep::makemove() 
+void Minsweep::makemove()
 {
     screenBuffer.writeToScreen(0, 16, L"Enter coordinates in format of 'x y'");
 
@@ -134,19 +133,20 @@ void Minsweep::makemove()
 
     ss >> xinp >> yinp;
 
-    if (xinp < 0 || xinp >= widened || yinp < 0 || yinp >= widened) 
+    if (xinp < 0 || xinp >= widened || yinp < 0 || yinp >= widened)
     {
         screenBuffer.writeToScreen(0, 18, L"Invalid coordinates, try again");
         return;
     }
 
     if (grid[xinp][yinp] == 9) // mine
-    { 
+    {
         kaboom();
-    } else 
+    }
+    else
     {
         revealed[xinp][yinp] = true; // reveal the selected cell
-        
+
         if (grid[xinp][yinp] == 0) // if selected cell empty, perform flood fill
         {
             floodFill(xinp, yinp);
@@ -154,22 +154,24 @@ void Minsweep::makemove()
     }
 }
 
-void Minsweep::display() 
+void Minsweep::display()
 {
-    for (int i = 0; i < widened; i++) 
+    for (int i = 0; i < widened; i++)
     {
-        for (int j = 0; j < widened; j++) 
+        for (int j = 0; j < widened; j++)
         {
-            if (revealed[i][j]) 
+            if (revealed[i][j])
             {
-                if (grid[i][j] == 9) 
+                if (grid[i][j] == 9)
                 {
                     screenBuffer.writeToScreen(i, j, L"M"); // mine
-                } else 
+                }
+                else
                 {
                     screenBuffer.writeToScreen(i, j, to_wstring(grid[i][j]));
                 }
-            } else 
+            }
+            else
             {
                 screenBuffer.writeToScreen(i, j, L"*"); // unrevealed
             }
@@ -177,14 +179,15 @@ void Minsweep::display()
     }
 }
 
-int Minsweep::minesweep() 
+int Minsweep::minesweep()
 {
+    screenBuffer.setActive();
     string difficulty = "x";
 
-    do 
+    do
     {
         screenBuffer.writeToScreen(0, 14, L"Choose difficulty: e for easy, m for medium, h for hard\n");
-        
+
         difficulty = screenBuffer.getBlockingInput(); // choose difficulty
     } while (difficulty != "e" && difficulty != "m" && difficulty != "h");
 
@@ -192,9 +195,9 @@ int Minsweep::minesweep()
 
     bool win = false;
 
-    while (!finquestionmark) 
+    while (!finquestionmark)
     {
-        if (kaboomquestionmark) 
+        if (kaboomquestionmark)
         {
             win = false;
             break;
@@ -202,7 +205,7 @@ int Minsweep::minesweep()
 
         checkwin();
 
-        if (winquestionmark) 
+        if (winquestionmark)
         {
             win = true;
             break;
@@ -213,11 +216,12 @@ int Minsweep::minesweep()
     }
 
     endgame();
-    
+
     if (win) // return win status
     {
         screenBuffer.writeToScreen(0, 20, L"Congratulations! You won!\n");
-    } else 
+    }
+    else
     {
         screenBuffer.writeToScreen(0, 20, L"You hit a mine. Game Over.\n");
     }

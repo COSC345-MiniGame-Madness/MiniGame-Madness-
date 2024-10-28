@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../src/hnefatafl.h"
+#include <sstream>
+#include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -120,9 +122,13 @@ namespace HnefataflTests
 
             // Move King
             game.move(std::make_pair(5, 5), std::make_pair(5, 3));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(5, 3)).c_str());
             game.move(std::make_pair(5, 3), std::make_pair(1, 3));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(1, 3)).c_str());
 			game.move(std::make_pair(1, 3), std::make_pair(1, 0));
+			Logger::WriteMessage(std::to_wstring(game.getPiece(1, 0)).c_str());
 			game.move(std::make_pair(1, 0), std::make_pair(0, 0));
+            Logger::WriteMessage(std::to_wstring(game.getPiece(0, 0)).c_str());
 
             // Check if the game is over
             Assert::IsTrue(game.isGameOver());
@@ -176,5 +182,64 @@ namespace HnefataflTests
             Assert::IsFalse(game.isValidInput("AA BB"));
             Assert::IsFalse(game.isValidInput("a1 B1"));
         }
+
+		// Test if HandleNeighboursCaptured captures the correct pieces
+        TEST_METHOD(HandleNeighboursCaptured)
+        {
+            Hnefatafl game;
+
+            // Set up the board to capture a piece
+            game.move(std::make_pair(0, 3), std::make_pair(4, 3)); // Move black piece
+            game.move(std::make_pair(10, 3), std::make_pair(6, 3)); // Move black piece
+
+            // Call the handleNeighboursCaptured function
+            game.handleNeighboursCaptured(4, 3);
+
+            // Check if the neighboring pieces are captured
+            Assert::AreEqual(EMPTY, game.getPiece(3, 3)); // Up
+            Assert::AreEqual(EMPTY, game.getPiece(5, 3)); // Down
+            Assert::AreEqual(EMPTY, game.getPiece(4, 2)); // Left
+            Assert::AreEqual(WHITE, game.getPiece(4, 4)); // Right
+        }
+
+        // Test the run method
+        /*TEST_METHOD(RunGame)
+        {
+            Hnefatafl game;
+
+            // Redirect std::cin and std::cout
+			std::istringstream input("W\rD6 D2\rE6 C6\rF6 D6\rD6 D3\rD3 A3\rA3 A1\rreturn\r");
+            std::ostringstream output;
+            std::streambuf* cinbuf = std::cin.rdbuf(input.rdbuf());
+            std::streambuf* coutbuf = std::cout.rdbuf(output.rdbuf());
+
+            // Run the game
+            int result = game.run();
+
+            // Restore std::cin and std::cout
+            std::cin.rdbuf(cinbuf);
+            std::cout.rdbuf(coutbuf);
+
+            // Check if the game returns to the main menu
+            Assert::AreEqual(0, result);
+
+            // Check the expected output for correct prompts and moves
+            std::string expectedOutput =
+                "Choose starting player (W/B) :\n"  // Prompt for starting player
+                "Enter your move (e.g., A1 B2): \n"  // Prompt for player move
+                "Enter your move (e.g., A1 B2): \n"
+                "Enter your move (e.g., A1 B2): \n"
+                "The king has escaped. White wins!\n"  // Expected game result if white wins
+                "Type 'return' to return to the main menu, or 'exit' to exit MiniGame-Madness.\n";
+
+            // Check if output contains the expected result
+            Assert::IsTrue(output.str().find(expectedOutput) != std::string::npos);
+
+            // Additional checks could include checking game board state after each move, 
+            // handling of captures, and ensuring that the game ends correctly.
+
+            // Example: Ensure the game ends correctly and the king escapes.
+            Assert::IsTrue(game.isGameOver());
+        }*/
     };
 }

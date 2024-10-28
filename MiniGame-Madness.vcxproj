@@ -128,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\chess.h" />
-    <ClInclude Include="src\battleShips.h" />
+    <ClInclude Include="src\BattleshipGame.h" />
     <ClInclude Include="src\chckrs.h" />
     <ClInclude Include="src\con4.h" />
     <ClInclude Include="src\hangman.h" />
@@ -137,10 +137,12 @@
     <ClInclude Include="src\maze.h" />
 	<ClInclude Include="src\minsweep.h" />
     <ClInclude Include="src\Menu.h" />
+    <ClInclude Include="src\minesweep.h" />
     <ClInclude Include="src\MockScreenBuffer.h" />
     <ClInclude Include="src\NaughtsxCrossess.h" />
     <ClInclude Include="src\RealScreenBuffer.h" />
     <ClInclude Include="src\ScreenBuffer.h" />
+    <ClInclude Include="src\solitaire.h" />
     <ClInclude Include="src\wordScrambler.h" />
   </ItemGroup>
   <ItemGroup>
@@ -154,11 +156,13 @@
 	<ClInclude Include="src\minsweep.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\MiniGame-Madness.cpp" />
+    <ClCompile Include="src\minsweep.cpp" />
     <ClCompile Include="src\NaughtsxCrossess.cpp" />
     <ClCompile Include="src\ScreenBuffer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\solitaire.cpp" />
     <ClCompile Include="src\wordScrambler.cpp" />
   </ItemGroup>
   <ItemGroup>

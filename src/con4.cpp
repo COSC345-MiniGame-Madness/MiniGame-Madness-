@@ -11,34 +11,32 @@ const wstring win = L"w";
 const wstring surrender = L"s";
 const wstring draw = L"d";
 
-Con4::Con4()
-{
-	populategrid();
+Con4::Con4() : currentplayer(1) {  // Initialize currentplayer
+    populategrid();
 }
 
-void Con4::endgame(wstring letter) // end game
+
+void Con4::endgame(const wstring& letter)  // Pass wstring by const reference
 {
     if (letter == win)
     {
         screenBuffer.writeToScreen(5, 16, L"Player " + to_wstring(currentplayer) + L" wins.", ScreenBuffer::GREEN, ScreenBuffer::BACKGROUND_NORMAL);
-
         screenBuffer.getBlockingInput();
     }
     else if (letter == surrender)
     {
         screenBuffer.writeToScreen(5, 16, L"Player " + to_wstring(currentplayer) + L" surrenders.", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
-
         screenBuffer.getBlockingInput();
     }
     else if (letter == draw)
     {
         screenBuffer.writeToScreen(5, 16, L"Draw.", ScreenBuffer::YELLOW, ScreenBuffer::BACKGROUND_NORMAL);
-
         screenBuffer.getBlockingInput();
     }
 
     winquestionmark = true;
 }
+
 
 void Con4::playerturn(int player)
 {
@@ -81,7 +79,7 @@ void Con4::playerturn(int player)
         {
             screenBuffer.writeToScreen(5, 16, L"Invalid input. Choose between 1 and 7.", ScreenBuffer::RED, ScreenBuffer::BACKGROUND_NORMAL);
 
-            screenBuffer.getBlockingInput();
+            diff = screenBuffer.getBlockingInput();
         }
 
         //screenBuffer.clearScreen();

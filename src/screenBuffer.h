@@ -27,7 +27,9 @@ class ScreenBuffer
 {
 private:
     HANDLE screenHandle = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    const WORD NO_COLOUR = -1;
+    static const WORD NO_COLOUR = -1;
+	static const int MIN_SCREEN_WIDTH = 120;
+	static const int MIN_SCREEN_HEIGHT = 20;
 
     /*!
     * @brief Throw an error if the result is false

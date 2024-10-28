@@ -108,13 +108,14 @@ class Maze {
 
 	 int WIDTH; /*!< Width of maze.*/
 	 int HEIGHT; /*!< Height of maze.*/
+	 static const int pathWidth = 2; /*!< The width of the path in the maze. */
 
 	 std::pair<int, int> start; /*!< The start position of the maze.*/
 	 std::pair<int, int> end; /*!< The end position of the maze.*/
 	 std::pair<int, int> playerPosition; /*!< The position of the player in the maze.*/
 
 	 std::map<std::pair<int, int>, std::unique_ptr<MazeNode>> mazeMap; /*!< A map of positions to nodes in the maze.*/
-	 std::set<std::pair<int, int>> inMaze; /*!< Set to track which nodes are already in the maze. */
+	 std::set<std::pair<int, int>> visited; /*!< Set to track which nodes are already visited. */
 
 	 /*!
 	 * @brief Checks if postion is valid.
@@ -181,35 +182,9 @@ class Maze {
 	 void printMaze();
 
 	 /*!
-	 * @brief Update the maze printed to the console.
-	 * @param playerPosition - The position of the player.
-	 */
-	 void updateMaze(std::pair<int, int> playerPosition);
-
-	 /*!
 	 * @brief Choose a random start and end point of the maze.
-	 * @return A pair of start and end points.
 	 */
-	 std::pair<std::pair<int, int>, std::pair<int, int>> chooseStartAndEnd();
-
-	 /*!
-	 * @brief Check if the player has reached the end of the maze.
-	 * @return True if the player has reached the end, false otherwise.
-	 */
-	 bool checkWin() const;
-
-	 /*!
-	 * @brief Moving the player.
-	 * @param direction - The direction the player wants to move in.
-	 * @return True if the player can move in the given direction, false otherwise.
-	 */
-	 bool movePlayer(Direction direction);
-
-	 /*!
-	 * @brief Get player input.
-	 * @return The direction the player wants to move in.
-	 */
-	 Direction getPlayerInput();
+	 void chooseStartAndEnd();
 
 public :
 	/*!

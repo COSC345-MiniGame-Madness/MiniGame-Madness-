@@ -10,7 +10,7 @@
 #include "ScreenBuffer.h" 
 #include "hangman.h"
 #include "con4.h"
-#include "maze.h"
+#include "solitaire.h"
 #include "hnefatafl.h"  
 #include "wordScrambler.h"
 #include "BattleshipGame.h"
@@ -18,6 +18,7 @@
 #include "minsweep.h"
 #include "chckrs.h"
 #include <conio.h>
+#include "minesweep.h"
 
 /*!
 * @class Menu
